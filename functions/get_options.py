@@ -36,8 +36,8 @@ class GetOptions:
     def get_source_path() -> Union[Path, str]:
         """Get and return the source path of the database to analyze."""
         source = Path(
-            Prompt.ask(
-                """[-] Enter the file path to the database """
+            Prompt.ask("""
+[-] Enter the file path to the database """
             )
         )
         c.print(f}"""

@@ -18,8 +18,9 @@ c = Console()
 class HelperFunctions:
 
     def query_database(
-        source: Union[Path, str], query: str
-    ) -> str:
+            source: Path | str,
+            query: str
+    ) -> dataframe:
         """Query the Cache.sqlite database file.
 
         Args:
@@ -45,19 +46,21 @@ class HelperFunctions:
 
 
     def get_destf_name(
-        dest: Union[Path, str], destf: str, time: str
-    ) -> str:
+            dest: Path | str,
+            destf: str,
+            time: str
+    ) -> Path:
         """Add date/time and proper file extension to output file name."""
-        output_kml_file = Path(f"{dest}\\{time}_{destf}.kml")
-        return output_kml_file
+        return Path(f"{dest}\\{time}_{destf}.kml")
 
 
     def get_csv_file_name(
-        dest: Union[Path, str], destf: str, time: str
-    ) -> str:
+            dest: Path | str,
+            destf: str,
+            time: str
+    ) -> Path:
         """Get the file path to save the csv file, if selected."""
-        output_csv_file = Path(f"{dest}\\{time}_{destf}.csv")
-        return output_csv_file
+        return Path(f"{dest}\\{time}_{destf}.csv")
 
 
     def convert_db_timestamp(timestamp: int) -> str:
@@ -105,33 +108,30 @@ class HelperFunctions:
         within the file path.
         """
 
-        c.print(
-            """[light_goldenrod1]
-===== RESULTS ====="""
-        )
+        c.print("[light_goldenrod1]===== RESULTS =====")
 
         # Display the time frame between which the records were obtained
         c.print(
-            f"""[grey66]
-[-] Processed [italic][dodger_blue1]{count:,}[/italic] [grey66]records from \
-the database...
-
-[-] Query command:
-    [italic][dodger_blue1]{query_command_string}[/italic]
-
-    [grey66]Beginning Date/Time Input (Local Time)  : [italic][dodger_blue1] \
-{HelperFunctions.convert_db_timestamp(start_time)}[/italic]
-    [grey66]End Date/Time Input (Local Time)        : [italic][dodger_blue1] \
-{HelperFunctions.convert_db_timestamp(end_time)}[/italic]"""
+            f"[grey66][-] Processed [italic][dodger_blue1]{count:,}[/italic]"
+            f"[grey66]records from the database...\n\n"
+            f"[-] Query command: [italic][dodger_blue1]{query_command_string}"
+            f"[/italic]\n\n"
+            f"[grey66]Beginning Date/Time Input (Local Time)  : [italic]"
+            f"[dodger_blue1] {HelperFunctions.convert_db_timestamp(start_time)}"
+            f"[/italic]\n\n"
+            f"[grey66]End Date/Time Input (Local Time)        : [italic]"
+            f"[dodger_blue1] {HelperFunctions.convert_db_timestamp(end_time)}"
+            f"[/italic]"
         )
 
         try:
             if output_csv_file:
                 # Print verification that the .csv file was created
                 c.print(
-                    f"""[grey66]
-[-] The .csv file was created successfully and is saved as:
-    [italic][dodger_blue1]{Path(output_csv_file).name}[/italic]"""
+                    f"[grey66][-] The .csv file was created successfully and is "
+                    f"saved as:\n"
+                    f"    [italic][dodger_blue1]{Path(output_csv_file).name}"
+                    f"[/italic]"
                 )
             else:
                 pass
@@ -140,24 +140,25 @@ the database...
 
         # Show the name of the output .kml file (including appended date/time)
         c.print(
-            f"""[grey66]
-[-] The .kml file was created with [italic] [dodger_blue1]{count:,}[/italic] \[grey66]records and is saved as:
-    [italic][dodger_blue1]{Path(output_kml_file).name}[/italic]"""
+            f"[grey66][-] The .kml file was created with [italic][dodger_blue1]"
+            f"{count:,}[/italic] [grey66]records and is saved as:\n\n"
+            f"    [italic][dodger_blue1]{Path(output_kml_file).name}[/italic]"
         )
 
         # Show directory where the output .kml file is saved
         c.print(
-            f"""[grey66]
-[-] The output file(s) are saved in the [italic]\
-[dodger_blue1]{Path(output_kml_file).parent}[/italic] [grey66]directory"""
+            f"[grey66][-] The output file(s) are saved in the [italic]"
+            f"[dodger_blue1]{Path(output_kml_file).parent}[/italic] "
+            f"[grey66]directory"
         )
 
         # Print the output to the screen
         c.print(
-            f"""[grey66]
-[-] Program completed in [italic][dodger_blue1]\
-{total_time:.4f}[/italic] [grey66]seconds"""
+            f"[grey66][-] Program completed in [italic][dodger_blue1] "
+            f"{total_time:.4f}[/italic] [grey66]seconds"
         )
+
+        return None
 
 
     def ask_open_output_kml_file(kml_file: Path) -> None:
@@ -172,21 +173,20 @@ the database...
 
         open_choice = (
             Confirm.ask(
-                """[light_goldenrod1]
-[-] Do you want to open the .kml file now?"""
+                "[light_goldenrod1][-] Do you want to open the .kml file now?"
             )
         )
 
         if open_choice == True:
             c.print(
-                """[dodger_blue1]
-[-] Opening the .kml file with Google Earth and then exiting..."""
+                "[dodger_blue1][-] Opening the .kml file with Google Earth "
+                "and then exiting..."
             )
             webbrowser.open(kml_file)
+            return None
         else:
             c.print(
-                f"""[light_goldenrod1]
-[-] Very good then. Exiting now..."""
+                "[light_goldenrod1][-] Very good then. Exiting now..."
             )
             # Exit the program
             sys.exit(0)

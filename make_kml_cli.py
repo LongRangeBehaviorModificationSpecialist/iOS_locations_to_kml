@@ -20,12 +20,13 @@ __version__ = "1.2.1"
 
 # Create the console object
 c = Console()
-install()
+install(show_locals=True, console=c)
 
 
 def convert_input_time_to_apple_time(
         date_string: str,
-        input_tz_name: str) -> float:
+        input_tz_name: str
+) -> float:
     """Converts the time string to Apple Absolute Time based on the user-defined
     timezone.
 
@@ -52,7 +53,7 @@ def convert_input_time_to_apple_time(
     except ZoneInfoNotFoundError:
         return f"Error: '{input_tz_name}' is not a valid IANA timezone."
     except ValueError as e:
-        return f"Error: Please check the date format. {e}"
+        return f"Error: Please check the date format -> {e}"
 
 
 
@@ -89,7 +90,8 @@ Example
 "YYYY-MM-DD HHMMSS" --endtime "YYYY-MM-DD HHMMSS" --tz [TIMEZONE]
 
 Notes
-    Enclose the full path in double quotes if it contains spaces.""")
+    Enclose the full path in double quotes if it contains spaces."""
+)
 
     parser.add_argument(
         "--source",
@@ -192,122 +194,108 @@ examine:
     t = time.localtime()
 
     # Print the local time when the script began
-    c.print(f"""[grey66]
-=================================
-
-Program started : [dodger_blue1]\
-{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET
-
-[grey66]=================================""")
+    c.print(
+        "[grey66]=================================\n\n"
+        f"Program started : [dodger_blue1]"
+        f"{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET\n\n"
+        "[grey66]================================="
+    )
 
     # Format the local time to append to the beginning of the output file name
     file_time = time.strftime("%Y-%m-%d_%H%M%S", t)
 
-    existing_databases = {entry.split(' ', 1)[0] for entry in GetOptions.db_option_list.values()}
+    existing_databases = {
+        entry.split(' ', 1)[0] for entry in GetOptions.db_option_list.values()
+    }
 
     if source.name in existing_databases:
         c.print(
-            f"\n[green]    [-] Database file: {source.name} IS IN the \
-approved file list. Continuing..."
+            f"\n[green]    [-] Database file: {source.name} IS IN the approved "
+            "file list. Continuing..."
         )
-
-        if db_type == 1:
-            from cache_sqlite_to_kml import (
-                write_cache_sqlite_to_kml
-            )
-            write_cache_sqlite_to_kml(
-                python_file=python_file,
-                source=source,
-                dest=dest,
-                destf=destf,
-                make_csv=make_csv,
-                start_time=start_time,
-                end_time=end_time,
-                file_time=file_time
-            )
-
-        elif db_type == 2:
-            from cache_encb_db_wifi_to_kml import (
-                write_cache_encb_db_wifi_to_kml
-            )
-            write_cache_encb_db_wifi_to_kml(
-                python_file=python_file,
-                source=source,
-                dest=dest,
-                destf=destf,
-                make_csv=make_csv,
-                start_time=start_time,
-                end_time=end_time,
-                file_time=file_time
-            )
-
-        elif db_type == 3:
-            from cache_encb_db_lte_to_kml import (
-                write_cache_encb_db_lte_to_kml
-            )
-            write_cache_encb_db_lte_to_kml(
-                python_file=python_file,
-                source=source,
-                dest=dest,
-                destf=destf,
-                make_csv=make_csv,
-                start_time=start_time,
-                end_time=end_time,
-                file_time=file_time
-            )
-
-        elif db_type == 4:
-            from cloud_v2_sqlite_signif_loc_to_kml import (
-                write_cache_v2_signif_loc_to_kml
-            )
-            write_cache_v2_signif_loc_to_kml(
-                python_file=python_file,
-                source=source,
-                dest=dest,
-                destf=destf,
-                make_csv=make_csv,
-                start_time=start_time,
-                end_time=end_time,
-                file_time=file_time
-            )
-
-        elif db_type == 5:
-            from local_sqlite_signif_loc_visits_to_kml import (
-                write_local_sqlite_signif_visits_to_kml
-            )
-            write_local_sqlite_signif_visits_to_kml(
-                python_file=python_file,
-                source=source,
-                dest=dest,
-                destf=destf,
-                make_csv=make_csv,
-                start_time=start_time,
-                end_time=end_time,
-                file_time=file_time
-            )
-
-        elif db_type == 6:
-            from local_sqlite_vehicle_loc_to_kml import (
-                write_local_sqlite_vehicle_loc_to_kml
-            )
-            write_local_sqlite_vehicle_loc_to_kml(
-                python_file=python_file,
-                source=source,
-                dest=dest,
-                destf=destf,
-                make_csv=make_csv,
-                start_time=start_time,
-                end_time=end_time,
-                file_time=file_time
-            )
-
-        else:
-            c.print("The code to examine the database you entered is not \
-complete. Please try again later.")
-
+        match db_type:
+            case "1":
+                from cache_sqlite_to_kml import (write_cache_sqlite_to_kml)
+                write_cache_sqlite_to_kml(
+                    python_file=python_file,
+                    source=source,
+                    dest=dest,
+                    destf=destf,
+                    make_csv=make_csv,
+                    start_time=start_time,
+                    end_time=end_time,
+                    file_time=file_time
+                )
+            case "2":
+                from cache_encb_db_wifi_to_kml import (write_cache_encb_db_wifi_to_kml)
+                write_cache_encb_db_wifi_to_kml(
+                    python_file=python_file,
+                    source=source,
+                    dest=dest,
+                    destf=destf,
+                    make_csv=make_csv,
+                    start_time=start_time,
+                    end_time=end_time,
+                    file_time=file_time
+                )
+            case "3":
+                from cache_encb_db_lte_to_kml import (write_cache_encb_db_lte_to_kml)
+                write_cache_encb_db_lte_to_kml(
+                    python_file=python_file,
+                    source=source,
+                    dest=dest,
+                    destf=destf,
+                    make_csv=make_csv,
+                    start_time=start_time,
+                    end_time=end_time,
+                    file_time=file_time
+                )
+            case "4":
+                from cloud_v2_sqlite_signif_loc_to_kml import (write_cache_v2_signif_loc_to_kml)
+                write_cache_v2_signif_loc_to_kml(
+                    python_file=python_file,
+                    source=source,
+                    dest=dest,
+                    destf=destf,
+                    make_csv=make_csv,
+                    start_time=start_time,
+                    end_time=end_time,
+                    file_time=file_time
+                )
+            case "5":
+                from local_sqlite_signif_loc_visits_to_kml import (write_local_sqlite_signif_visits_to_kml)
+                write_local_sqlite_signif_visits_to_kml(
+                    python_file=python_file,
+                    source=source,
+                    dest=dest,
+                    destf=destf,
+                    make_csv=make_csv,
+                    start_time=start_time,
+                    end_time=end_time,
+                    file_time=file_time
+                )
+            case "6":
+                from local_sqlite_vehicle_loc_to_kml import (write_local_sqlite_vehicle_loc_to_kml)
+                write_local_sqlite_vehicle_loc_to_kml(
+                    python_file=python_file,
+                    source=source,
+                    dest=dest,
+                    destf=destf,
+                    make_csv=make_csv,
+                    start_time=start_time,
+                    end_time=end_time,
+                    file_time=file_time
+                )
+            case _:
+                c.print(
+                    "The code to examine the database you entered is not "
+                    "complete. Please try again later."
+                )
     else:
-        c.print(f"{source.name} IS NOT IN the approved list. Please choose a \
-different file...")
+        c.print(
+            f"{source.name} IS NOT IN the approved list. Please choose a "
+            "different file..."
+        )
 
 
 if __name__ == "__main__":

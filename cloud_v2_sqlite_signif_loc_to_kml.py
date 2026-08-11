@@ -3,7 +3,7 @@
 from rich.console import Console
 import time
 
-from functions.functions import HelperFunctions as hf
+from functions.functions import Utils
 from vars.cloud_v2_sqlite_signif_loc import (
     cloud_v2_sqlite_signif_loc_query,
     cloud_v2_sqlite_signif_loc_kml_file_header,
@@ -37,29 +37,26 @@ def write_cache_v2_signif_loc_to_kml(
     )
 
     # Query the database file.
-    df = hf.query_database(
-        source=source,
-        query=CLOUDV2_SIG_LOC_QUERY
-    )
+    df = hf.query_database(source=source, query=CLOUDV2_SIG_LOC_QUERY)
 
-    # Get the total number of records in the worksheet.
+    # Get the total number of records returned
     number_of_rows = len(df)
 
-    # Print verification message to screen.
+    # Print verification message to screen
     c.print(
-        f"\n[grey66][-] Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
+        f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
         "of data\n"
     )
 
-    # Set output file to the correct format.
-    output_kml_file = hf.get_destf_name(
+    # Set kml file name
+    kml_file = Utils.get_destf_name(
         dest=dest,
         destf=destf,
-        time=file_time
+        time=file_time,
     )
 
-    # Open the output file using the context manager.
-    with open(output_kml_file, "w", encoding="utf-8") as f:
+    # Open the output file
+    with open(kml_file, "w", encoding="utf-8") as f:
 
         # Write the header data of the output .kml file.
         kml_header = cloud_v2_sqlite_signif_loc_kml_file_header()
@@ -69,7 +66,7 @@ def write_cache_v2_signif_loc_to_kml(
         # Initialize a counter variable to keep track of number of records.
         count = 0
 
-        # Set variables from the dataframe.
+        # Set variables from the dataframe
         for index, row in df.iterrows():
             record = row["record_number"]
             Z_PK = row["z_pk"]
@@ -88,7 +85,7 @@ def write_cache_v2_signif_loc_to_kml(
                 f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
             )
 
-            # Write the data from each record to the output .kml file.
+            # Write the data from each record to the .kml file
             kml_body = cloud_v2_sqlite_signif_loc_kml_file_body(
                 record=record,
                 Z_PK=Z_PK,
@@ -99,50 +96,44 @@ def write_cache_v2_signif_loc_to_kml(
                 uncertainty=uncertainty,
                 add_create_utc=add_create_utc,
                 add_expire_utc=add_expire_utc,
-                data_source=data_source
+                data_source=data_source,
             )
 
             f.write(kml_body)
 
-            # Increment the counter variable for the next record.
+            # Increment the counter variable
             count += 1
 
         # Write the closing data to the output .kml file.
-        f.write(f"{hf.write_kml_closing()}")
+        f.write(f"{Utils.write_kml_closing()}")
 
     # If the user chose to make a .csv file containing the parsed records.
     if make_csv.lower() == "y":
-
-        output_csv_file = hf.get_csv_file_name(
+        csv_file = hf.get_csv_file_name(
             dest=dest,
             destf=destf,
             time=file_time
         )
-
-        df.to_csv(
-            output_csv_file,
-            index=False
-        )
-
+        df.to_csv(output_csv_file, index=False)
     else:
         pass
 
-    # Get the time the script completed.
+    # Time the script ended
     ending_time = time.perf_counter()
 
-    # Get the total time the script took to complete.
+    # Total time to complete
     total_time = ending_time - file_start_time
 
-    hf.end_program(
+    Utils.end_program(
         query_command_string=query_command_string,
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=output_csv_file,
+        output_csv_file=csv_file,
         count=count,
-        output_kml_file=output_kml_file,
-        total_time=total_time
+        output_kml_file=kml_file,
+        total_time=total_time,
     )
 
     # Ask user if they want to automatically open the output file.
-    hf.ask_open_output_kml_file(kml_file=output_kml_file)
+    Utils.ask_open_output_kml_file(kml_file=kml_file)

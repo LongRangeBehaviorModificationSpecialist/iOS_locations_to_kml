@@ -1,6 +1,5 @@
-
 # !/usr/bin/env python3
-# DLU : 26-Jul-2026
+
 
 from datetime import datetime
 from pathlib import Path
@@ -33,41 +32,41 @@ class GetOptions:
 
 
     @staticmethod
-    def get_source_path() -> Union[Path, str]:
+    def get_source_path() -> Path:
         """Get and return the source path of the database to analyze."""
         source = Path(
-            Prompt.ask("""
-[-] Enter the file path to the database """
-            )
+            Prompt.ask("[-] Enter the file path to the database")
         )
-        c.print(f}"""
-\[i] Path to database file: [italic][cyan]{source}[/italic]"""
+        c.print(
+            f"[-] Path to database file: [cyan]{source}"
         )
-        existing_databases = {entry.split(" ", 1)[0] for entry in GetOptions.db_option_list.values()}
+        existing_databases = {
+            entry.split(" ", 1)[0] for entry in GetOptions.db_option_list.values()
+        }
         if source.name in existing_databases:
             c.print(
-                f"""[green]
-    [-] Database file: {source.name} IS IN the approved file list. Continuing..."""
+                f"[green3][-] Database file: {source.name} IS IN the approved "
+                "file list. Continuing..."
             )
             return source
         else:
             c.print(
-                f"""[red]    
-    [!] Database file: {source.name} IS NOT IN the approved list. Please choose a different file..."""
+                f"[red1][!] Database file: {source.name} IS NOT IN the "
+                "approved list. Please choose a different file..."
             )
             sys.exit(1)
 
 
     @staticmethod
-    def get_dest_path() -> Union[Path, str]:
+    def get_dest_path() -> Path:
         """Get and return the destination path to save the results file(s)."""
         dest = Path(
-            Prompt.ask("""
-[-] Enter the file path to where results will be saved """
+            Prompt.ask(
+                "[-] Enter the file path to where results will be saved"
             )
         )
-        c.print(f"""
-\[i] Path to where results will be saved : [italic][cyan]{dest}[/italic]"""
+        c.print(
+            f"[-] Path to where results will be saved -> [cyan]{dest}"
         )
         return dest
 
@@ -75,11 +74,11 @@ class GetOptions:
     @staticmethod
     def get_destf_name() -> str:
         """Get and return the base file name for the results file(s)."""
-        destf = Prompt.ask("""
-[-] Enter the file name of the output .kml file """
+        destf = Prompt.ask(
+            "[-] Enter the file name of the output .kml file"
         )
-        c.print(f"""
-\[i] The base name of the .kml file will be : [italic][cyan]{destf}[/italic]"""
+        c.print(
+            f"[-] The base name of the .kml file will be : [cyan]{destf}"
         )
         return destf
 
@@ -92,53 +91,57 @@ class GetOptions:
             "No, a .csv file will NOT be created.",
             "[bright_red][!] A valid option was not entered."
         ]
-        csv = (
-            Prompt.ask("""
-[-] Create a .csv file with the results of the query? """,
+
+        csv_option = (
+            Prompt.ask(
+                "[-] Create a .csv file with the results of the query?",
                 choices=["y", "n"],
                 show_choices=True
-            )
-            .strip()
-            .lower()
+            ).strip().lower()
         )
 
-        if csv == "y":
-            c.print(f"""
-\[i] Will a .csv file be created: [italic][cyan]{responses[0]}[/italic]"""
+        if csv_option == "y":
+            c.print(
+                f"[-] Will a .csv file be created -> [cyan]{responses[0]}"
             )
-            return csv
-        elif csv == "n":
-            c.print(f"""
-\[i] Will a .csv file be created: [italic][cyan]{responses[1]}[/italic]"""
+            return csv_option
+
+        elif csv_option == "n":
+            c.print(
+                f"[-] Will a .csv file be created -> [cyan]{responses[1]}"
             )
-            return csv
+            return csv_option
+
         else:
             c.print(f"{responses[2]}")
+
             GetOptions.get_csv_option()
 
 
     @staticmethod
     def get_db_option() -> str:
         """Get and return the specific location option to examine."""
-        db = Prompt.ask("""
-[-] Type of location data to examine (see help for options) """
+        db = Prompt.ask(
+            "[-] Type of location data to examine (see help for options)"
         )
         try:
             # Convert user input to an integer
             db = int(db)
-            c.print(f"""
-\[i] Type of location data to be examined : [italic][cyan]{db}[/italic]"""
+            c.print(
+                f"[-] Type of location data to be examined -> [cyan]{db}"
             )
             return db
         except ValueError:
             # Handles where input cannot be converted to an integer
-            c.print("""[red]
-[!] Error : [italic]Invalid input. Please enter a valid number.[/italic]"""
+            c.print(
+                "[red][!] Error : [italic]Invalid input. Please enter a valid "
+                "number.[/italic]"
             )
         except KeyError:
             # Handles where the number is an integer, but not in dictionary
-            c.print(f"""[red]
-[!] Error: [italic]Number : {db} does not match any options in the database.[/italic]"""
+            c.print(
+                f"[red1][!] Error: Number -> {db} does not match any "
+                f"options in the database"
             )
 
 
@@ -149,19 +152,19 @@ class GetOptions:
         """
         try:
             start_time = Prompt.ask(
-                str("""
-[-] Enter the date/time of the [bold]first[/bold] record to be returned (use 'YYYY-MM-DD HHMMSS' format) """
+                str("[-] Enter the date/time of the [bold]first[/bold] record "
+                "to be returned (use 'YYYY-MM-DD HHMMSS' format)"
                 )
             )
             datetime.strptime(start_time, "%Y-%m-%d %H%M%S")
-            c.print(f"""
-\[i] Date/Time of [bold]first[/bold] record to be returned: [i][cyan]{start_time}"""
+            c.print(
+                f"[-] Date/Time of [bold]first[/bold] record to be returned: "
+                f"[i][cyan]{start_time}"
             )
             return start_time
         except ValueError as e:
             c.print(
-                f"""[bright_red]
-[!] An error occured : {e}"""
+                f"[red1][!] An error occured -> {e}"
             )
             GetOptions.get_start_time()
 
@@ -173,21 +176,21 @@ class GetOptions:
         """
         try:
             end_time = Prompt.ask(
-                str("""
-[-] Enter the date/time of the [bold]last[/bold] record to be returned (use 'YYYY-MM-DD HHMMSS' format) """
+                str("[-] Enter the date/time of the [bold]last[/bold] record "
+                "to be returned (use 'YYYY-MM-DD HHMMSS' format)"
                 )
             )
             if datetime.strptime(end_time, "%Y-%m-%d %H%M%S"):
-                c.print(f"""
-\[i] Date/Time of [bold]last[/bold] record to be returned: [italic][cyan]{end_time}[/italic]"""
+                c.print(
+                    f"[-] Date/Time of [bold]last[/bold] record to be returned: "
+                    f"[italic][cyan]{end_time}[/italic]"
                 )
                 return end_time
             else:
                 raise ValueError
         except ValueError as e:
             c.print(
-                f"""[bold red]
-[!] An error occured : [italic{e}[/italic]"""
+                f"[red1][!] An error occured -> {e}"
             )
             GetOptions.get_end_time()
 
@@ -197,10 +200,10 @@ class GetOptions:
         """Get and return the timezone of the start and end times input
         by the user.
         """
-        tz = Prompt.ask("""
-[-] Enter the timezone used for the date/time values """
+        tz = Prompt.ask(
+            "[-] Enter the timezone used for the date/time values"
         )
-        c.print(f"""
-\[i] Entered timezone is: [italic][cyan]{tz}[/italic]"""
+        c.print(
+            f"[-] Entered timezone is: [italic][cyan]{tz}[/italic]"
         )
         return tz

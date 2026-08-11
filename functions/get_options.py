@@ -1,6 +1,5 @@
 # !/usr/bin/env python3
 
-
 from datetime import datetime
 from pathlib import Path
 from typing import Union
@@ -12,7 +11,7 @@ from rich.prompt import Prompt
 
 
 c = Console()
-install()
+install(show_locals=True, console=c)
 
 
 class GetOptions:
@@ -35,23 +34,21 @@ class GetOptions:
     def get_source_path() -> Path:
         """Get and return the source path of the database to analyze."""
         source = Path(
-            Prompt.ask("[-] Enter the file path to the database")
+            Prompt.ask("Enter the file path to the database")
         )
-        c.print(
-            f"[-] Path to database file: [cyan]{source}"
-        )
+        c.print(f"Path to database file: [cyan]{source}")
         existing_databases = {
             entry.split(" ", 1)[0] for entry in GetOptions.db_option_list.values()
         }
         if source.name in existing_databases:
             c.print(
-                f"[green3][-] Database file: {source.name} IS IN the approved "
+                f"[green3]Database file: {source.name} IS IN the approved "
                 "file list. Continuing..."
             )
             return source
         else:
             c.print(
-                f"[red1][!] Database file: {source.name} IS NOT IN the "
+                f"[red1]Database file: {source.name} IS NOT IN the "
                 "approved list. Please choose a different file..."
             )
             sys.exit(1)
@@ -62,11 +59,11 @@ class GetOptions:
         """Get and return the destination path to save the results file(s)."""
         dest = Path(
             Prompt.ask(
-                "[-] Enter the file path to where results will be saved"
+                "Enter the file path to where results will be saved"
             )
         )
         c.print(
-            f"[-] Path to where results will be saved -> [cyan]{dest}"
+            f"Path to where results will be saved -> [cyan]{dest}"
         )
         return dest
 
@@ -75,10 +72,10 @@ class GetOptions:
     def get_destf_name() -> str:
         """Get and return the base file name for the results file(s)."""
         destf = Prompt.ask(
-            "[-] Enter the file name of the output .kml file"
+            "Enter the file name of the output .kml file"
         )
         c.print(
-            f"[-] The base name of the .kml file will be : [cyan]{destf}"
+            f"The base name of the .kml file will be : [cyan]{destf}"
         )
         return destf
 
@@ -89,27 +86,24 @@ class GetOptions:
         responses = [
             "Yes, a .csv file will be created.",
             "No, a .csv file will NOT be created.",
-            "[bright_red][!] A valid option was not entered."
+            "[red1]A valid option was not entered."
         ]
 
         csv_option = (
             Prompt.ask(
                 "[-] Create a .csv file with the results of the query?",
                 choices=["y", "n"],
-                show_choices=True
+                show_choices=True,
+                default="y",
             ).strip().lower()
         )
 
         if csv_option == "y":
-            c.print(
-                f"[-] Will a .csv file be created -> [cyan]{responses[0]}"
-            )
+            c.print(f"Make a .csv file -> [cyan]{responses[0]}")
             return csv_option
 
         elif csv_option == "n":
-            c.print(
-                f"[-] Will a .csv file be created -> [cyan]{responses[1]}"
-            )
+            c.print(f"Make a .csv file -> [cyan]{responses[1]}")
             return csv_option
 
         else:
@@ -122,25 +116,24 @@ class GetOptions:
     def get_db_option() -> str:
         """Get and return the specific location option to examine."""
         db = Prompt.ask(
-            "[-] Type of location data to examine (see help for options)"
+            "Type of location data to examine (see help for options)"
         )
         try:
             # Convert user input to an integer
             db = int(db)
             c.print(
-                f"[-] Type of location data to be examined -> [cyan]{db}"
+                f"Type of location data to be examined -> [cyan]{db}"
             )
             return db
         except ValueError:
             # Handles where input cannot be converted to an integer
             c.print(
-                "[red][!] Error : [italic]Invalid input. Please enter a valid "
-                "number.[/italic]"
+                "[red]Error: Invalid input. Please enter a valid number"
             )
         except KeyError:
             # Handles where the number is an integer, but not in dictionary
             c.print(
-                f"[red1][!] Error: Number -> {db} does not match any "
+                f"[red1]Error: Number -> {db} does not match any "
                 f"options in the database"
             )
 
@@ -152,20 +145,18 @@ class GetOptions:
         """
         try:
             start_time = Prompt.ask(
-                str("[-] Enter the date/time of the [bold]first[/bold] record "
+                str("Enter the date/time of the [bold]first[/bold] record "
                 "to be returned (use 'YYYY-MM-DD HHMMSS' format)"
                 )
             )
             datetime.strptime(start_time, "%Y-%m-%d %H%M%S")
             c.print(
-                f"[-] Date/Time of [bold]first[/bold] record to be returned: "
+                f"Date/Time of [bold]first[/bold] record to be returned: "
                 f"[i][cyan]{start_time}"
             )
             return start_time
         except ValueError as e:
-            c.print(
-                f"[red1][!] An error occured -> {e}"
-            )
+            c.print(f"[red1]An error occured -> {e}")
             GetOptions.get_start_time()
 
 
@@ -176,22 +167,20 @@ class GetOptions:
         """
         try:
             end_time = Prompt.ask(
-                str("[-] Enter the date/time of the [bold]last[/bold] record "
+                str("Enter the date/time of the [bold]last[/bold] record "
                 "to be returned (use 'YYYY-MM-DD HHMMSS' format)"
                 )
             )
             if datetime.strptime(end_time, "%Y-%m-%d %H%M%S"):
                 c.print(
-                    f"[-] Date/Time of [bold]last[/bold] record to be returned: "
+                    f"Date/Time of [bold]last[/bold] record to be returned: "
                     f"[italic][cyan]{end_time}[/italic]"
                 )
                 return end_time
             else:
                 raise ValueError
         except ValueError as e:
-            c.print(
-                f"[red1][!] An error occured -> {e}"
-            )
+            c.print(f"[red1]An error occured -> {e}")
             GetOptions.get_end_time()
 
 
@@ -201,9 +190,7 @@ class GetOptions:
         by the user.
         """
         tz = Prompt.ask(
-            "[-] Enter the timezone used for the date/time values"
+            "Enter the timezone used for the date/time values"
         )
-        c.print(
-            f"[-] Entered timezone is: [italic][cyan]{tz}[/italic]"
-        )
+        c.print(f"Entered timezone is: [italic][cyan]{tz}[/italic]")
         return tz

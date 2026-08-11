@@ -3,6 +3,7 @@
 import argparse
 from argparse import RawDescriptionHelpFormatter
 import time
+from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 from rich.console import Console
@@ -21,6 +22,19 @@ __version__ = "1.2.1"
 # Create the console object
 c = Console()
 install(show_locals=True, console=c)
+
+
+@dataclass(frozen=True)
+class ConversionArgs:
+    """Arguments shared across all conversion functions."""
+    python_file: str
+    source: str
+    dest: str
+    destf: str
+    make_csv: bool
+    start_time: str
+    end_time: str
+    file_time: str
 
 
 def convert_input_time_to_apple_time(
@@ -76,10 +90,10 @@ Last Updated:
 
 Description
     Create a .kml file by reading the location records from the database \
-specified in the \"--db\" option.
+specified in the '--db' option.
 
-    The "--starttime" and "--endtime" values can be given as a string using \
-the following format: "YYYY-MM-DD HHMMSS".
+    The '--starttime' and '--endtime' values can be given as a string using \
+the following format: 'YYYY-MM-DD HHMMSS'.
 
 URL
     github.com/LongRangeBehaviorModificationSpecialist/ios_locations_to_kml
@@ -87,7 +101,7 @@ URL
 Example
     python .\\make_kml.py --source [SOURCE-FILE] --dest [DESTINATION-FOLDER] \
 --destf [DESTINATION_FILENAME] --csv [y,n] --db [DATABASE_CHOICE] --starttime \
-"YYYY-MM-DD HHMMSS" --endtime "YYYY-MM-DD HHMMSS" --tz [TIMEZONE]
+[YYYY-MM-DD HHMMSS] --endtime [YYYY-MM-DD HHMMSS] --tz [TIMEZONE]
 
 Notes
     Enclose the full path in double quotes if it contains spaces."""
@@ -97,16 +111,14 @@ Notes
         "--source",
         type=Path,
         required=True,
-        help="[str] Directory where database file is located (include file \
-name in path)."
+        help="[str] Full path of database file."
     )
 
     parser.add_argument(
         "--dest",
         type=Path,
         required=True,
-        help="[str] Directory to save resulting .kml file (and .csv file if \
-selected)."
+        help="[str] Directory to save resulting .kml (and .csv) file(s)."
     )
 
     parser.add_argument(
@@ -114,8 +126,7 @@ selected)."
         type=str,
         required=True,
         help="[str] File name of the resulting .kml file. The current date and \
-time will be appended to the beginning of the file name with the following \
-format: \"YYYY-MM-DD_hhmmss\"."
+time will be appended to the beginning of the file."
     )
 
     parser.add_argument(
@@ -123,7 +134,7 @@ format: \"YYYY-MM-DD_hhmmss\"."
         type=str,
         choices=["y","n"],
         required=True,
-        help="[str] Create a .csv file with the results of the query (yes/no) ?"
+        help="[str] Save a .csv file containing the query results?"
     )
 
     parser.add_argument(
@@ -146,14 +157,14 @@ examine:
         "--starttime",
         type=str,
         required=True,
-        help="[str] Timestamp of the first record to return (use \"YYYY-MM-DD HHMMSS\" format)."
+        help="[str] Timestamp of the first record to get ('YYYY-MM-DD HHMMSS')."
     )
 
     parser.add_argument(
         "--endtime",
         type=str,
         required=True,
-        help="[str] Timestamp of the last record to return (use \"YYYY-MM-DD HHMMSS\" format)."
+        help="[str] Timestamp of the last record to get ('YYYY-MM-DD HHMMSS')."
     )
 
     parser.add_argument(
@@ -162,7 +173,7 @@ examine:
         choices=["ET", "CT", "MT", "AZ", "PT", "AKT", "HT", "UTC"],
         required=True,
         default="UTC",
-        help="[str] Timezone used for the \"--starttime\" and \"--endtime\" values."
+        help="[str] Timezone used for the time values."
     )
 
     args = parser.parse_args()
@@ -207,27 +218,31 @@ examine:
     existing_databases = {
         entry.split(' ', 1)[0] for entry in GetOptions.db_option_list.values()
     }
+    
+    # Create the dataclass from argparse.Namespace (clean mapping)
+    conversion_args = ConversionArgs(
+        python_file=python_file,
+        source=source,
+        dest=dest,
+        destf=destf,
+        make_csv=make_csv,
+        start_time=start_time,
+        end_time=end_time,
+        file_time=file_time,
+    )
+    
 
     if source.name in existing_databases:
         c.print(
-            f"\n[green]    [-] Database file: {source.name} IS IN the approved "
+            f"\n[green]    Database file: {source.name} IS IN the approved "
             "file list. Continuing..."
         )
         match db_type:
             case "1":
-                from cache_sqlite_to_kml import (write_cache_sqlite_to_kml)
-                write_cache_sqlite_to_kml(
-                    python_file=python_file,
-                    source=source,
-                    dest=dest,
-                    destf=destf,
-                    make_csv=make_csv,
-                    start_time=start_time,
-                    end_time=end_time,
-                    file_time=file_time
-                )
+                from cache_sqlite_to_kml import write_cache_sqlite_to_kml
+                write_cache_sqlite_to_kml(conversion_args)
             case "2":
-                from cache_encb_db_wifi_to_kml import (write_cache_encb_db_wifi_to_kml)
+                from cache_encb_db_wifi_to_kml import write_cache_encb_db_wifi_to_kml
                 write_cache_encb_db_wifi_to_kml(
                     python_file=python_file,
                     source=source,
@@ -239,7 +254,7 @@ examine:
                     file_time=file_time
                 )
             case "3":
-                from cache_encb_db_lte_to_kml import (write_cache_encb_db_lte_to_kml)
+                from cache_encb_db_lte_to_kml import write_cache_encb_db_lte_to_kml
                 write_cache_encb_db_lte_to_kml(
                     python_file=python_file,
                     source=source,
@@ -251,7 +266,7 @@ examine:
                     file_time=file_time
                 )
             case "4":
-                from cloud_v2_sqlite_signif_loc_to_kml import (write_cache_v2_signif_loc_to_kml)
+                from cloud_v2_sqlite_signif_loc_to_kml import write_cache_v2_signif_loc_to_kml
                 write_cache_v2_signif_loc_to_kml(
                     python_file=python_file,
                     source=source,
@@ -263,7 +278,7 @@ examine:
                     file_time=file_time
                 )
             case "5":
-                from local_sqlite_signif_loc_visits_to_kml import (write_local_sqlite_signif_visits_to_kml)
+                from local_sqlite_signif_loc_visits_to_kml import write_local_sqlite_signif_visits_to_kml
                 write_local_sqlite_signif_visits_to_kml(
                     python_file=python_file,
                     source=source,
@@ -275,7 +290,7 @@ examine:
                     file_time=file_time
                 )
             case "6":
-                from local_sqlite_vehicle_loc_to_kml import (write_local_sqlite_vehicle_loc_to_kml)
+                from local_sqlite_vehicle_loc_to_kml import write_local_sqlite_vehicle_loc_to_kml
                 write_local_sqlite_vehicle_loc_to_kml(
                     python_file=python_file,
                     source=source,

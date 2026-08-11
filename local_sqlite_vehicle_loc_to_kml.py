@@ -37,10 +37,7 @@ def write_local_sqlite_vehicle_loc_to_kml(
     )
 
     # Query the database file
-    df = Utils.query_database(
-        source=source,
-        query=LOCAL_SQLITE_VEH_LOC_QUERY,
-    )
+    df = Utils.query_database(source=source, query=LOCAL_SQLITE_VEH_LOC_QUERY)
 
     # Get the total number of records returned
     number_of_rows = len(df)
@@ -114,7 +111,7 @@ def write_local_sqlite_vehicle_loc_to_kml(
             destf=destf,
             time=file_time,
         )
-        df.to_csv(output_csv_file, index=False)
+        df.to_csv(csv_file, index=False)
     else:
         pass
 
@@ -129,11 +126,11 @@ def write_local_sqlite_vehicle_loc_to_kml(
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=csv_file,
+        csv_file=csv_file,
         count=count,
-        output_kml_file=kml_file,
+        kml_file=kml_file,
         total_time=total_time,
     )
 
     # Ask user if they want to open the output file
-    Utils.ask_open_output_kml_file(kml_file=kml_file)
+    Utils.ask_open_kml_file(kml_file=kml_file)

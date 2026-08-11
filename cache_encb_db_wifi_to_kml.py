@@ -37,10 +37,7 @@ def write_cache_encb_db_wifi_to_kml(
     )
 
     # Query the database
-    df = Utils.query_database(
-        source=source,
-        query=CACHE_ENCRYPTEDB_WIFI_QUERY,
-    )
+    df = Utils.query_database(source=source, query=CACHE_ENCRYPTEDB_WIFI_QUERY)
 
     # Get the total number of records returned
     number_of_rows = len(df)

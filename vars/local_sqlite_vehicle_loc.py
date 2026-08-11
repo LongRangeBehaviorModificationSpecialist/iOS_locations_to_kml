@@ -2,7 +2,8 @@
 
 def local_sqlite_vehicle_loc_query(
         start_time: int,
-        end_time: int) -> str:
+        end_time: int
+) -> str:
     LOCAL_VEH_LOC_QUERY = f"""
 SELECT
     ROW_NUMBER() OVER() AS 'record_number',
@@ -159,7 +160,8 @@ def local_sqlite_vehicle_loc_kml_file_body(
         loc_combined: str,
         location_uncertainty: int,
         identifier: str,
-        data_source: str) -> str:
+        data_source: str
+) -> str:
     LOCAL_VEH_LOC_KML_FILE_BODY = f"""
       <Placemark>
         <name>{str(record).zfill(6)}</name>

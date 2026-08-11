@@ -38,7 +38,7 @@ def write_cache_v2_signif_loc_to_kml(
     )
 
     # Query the database
-    df = hf.query_database(source=source, query=CLOUDV2_SIG_LOC_QUERY)
+    df = Utils.query_database(source=source, query=CLOUDV2_SIG_LOC_QUERY)
 
     # Get the total number of records returned
     number_of_rows = len(df)

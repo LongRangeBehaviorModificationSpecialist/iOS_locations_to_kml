@@ -40,7 +40,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     )
 
     # Query the database file
-    df = hf.query_database(
+    df = Utils.query_database(
         source=source,
         query=CACHE_ENCRYPTEDB_WIFI_QUERY,
     )
@@ -55,16 +55,16 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     )
 
     # Set output file to the correct format
-    output_kml_file = hf.get_destf_name(
+    kml_file = Utils.get_destf_name(
         dest=dest,
         destf=destf,
         time=file_time,
     )
 
     # Open the output file
-    with open(output_kml_file, "w", encoding="utf-8") as f:
+    with open(kml_file, "w", encoding="utf-8") as f:
 
-        # Write the header of .kml file
+        # Write the header block of .kml file
         kml_header = cache_encb_db_lte_kml_file_header()
 
         f.write(kml_header)
@@ -109,16 +109,16 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
 
             f.write(kml_body)
 
-            # Increment the counter variable for the next record.
+            # Increment the counter variable
             count += 1
 
-        # Write the closing data to the .kml file
+        # Write the closing block to the .kml file
         f.write(f"{Utils.write_kml_closing()}")
 
-    # If the user chose to make a .csv file
+    # If the user chose to save a .csv file
     match make_csv:
         case "y":
-            output_csv_file = Utils.get_csv_file_name(
+            csv_file = Utils.get_csv_file_name(
                 dest=dest,
                 destf=destf,
                 time=file_time,
@@ -127,10 +127,10 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
         case "n":
             pass
 
-    # Get the time the script completed
+    # Time the script completed
     ending_time = time.perf_counter()
 
-    # Get the total time the script took to complete
+    # Total time to complete
     total_time = ending_time - file_start_time
 
     Utils.end_program(
@@ -138,12 +138,12 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=output_csv_file,
+        output_csv_file=csv_file,
         count=count,
-        output_kml_file=output_kml_file,
+        output_kml_file=kml_file,
         total_time=total_time,
     )
 
     # Ask user if they want to open the output file
-    Utils.ask_open_output_kml_file(kml_file=output_kml_file)
+    Utils.ask_open_output_kml_file(kml_file=kml_file)
 

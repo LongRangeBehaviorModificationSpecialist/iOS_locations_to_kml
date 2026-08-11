@@ -120,7 +120,7 @@ def get_options():
     )
 
     # Ask questions to get the variables to pass to the make_kml_prompted() function
-    # Using rich to display the final arguments beautifully
+    # Using rich to display the final arguments
     source     = GetOptions.get_source_path()
     dest       = GetOptions.get_dest_path()
     destf      = GetOptions.get_destf_name()

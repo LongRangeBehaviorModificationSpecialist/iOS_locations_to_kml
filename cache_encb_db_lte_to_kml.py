@@ -40,10 +40,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     )
 
     # Query the database file
-    df = Utils.query_database(
-        source=source,
-        query=CACHE_ENCRYPTEDB_WIFI_QUERY,
-    )
+    df = Utils.query_database(source=source, query=CACHE_ENCRYPTEDB_WIFI_QUERY)
 
     # Get the total number of records
     number_of_rows = len(df)

@@ -2,7 +2,8 @@
 
 def cache_encb_db_lte_query(
         start_time: int,
-        end_time: int) -> str:
+        end_time: int
+) -> str:
     CACHE_ENCRYPTEDB_LTE_QUERY = f"""
 SELECT
     ROW_NUMBER() OVER() AS 'record_number',
@@ -167,7 +168,8 @@ def cache_encb_db_lte_kml_file_body(
         site_info: str,
         altitude: str,
         confidence: str,
-        data_source: str) -> str:
+        data_source: str
+) -> str:
     CACHE_ENCRYPTEDB_LTE_KML_FILE_BODY = f"""
       <Placemark>
         <name>{str(record).zfill(6)}</name>

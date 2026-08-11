@@ -130,9 +130,9 @@ def write_cache_v2_signif_loc_to_kml(
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=csv_file,
+        csv_file=csv_file,
         count=count,
-        output_kml_file=kml_file,
+        kml_file=kml_file,
         total_time=total_time,
     )
 

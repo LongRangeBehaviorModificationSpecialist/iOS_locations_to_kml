@@ -1,5 +1,4 @@
 # !/usr/bin/env python3
-# DLU : 26-Jul-2026
 
 from rich.console import Console
 import time
@@ -14,14 +13,14 @@ from vars.cache_encb_lte import(
 c = Console()
 
 def write_cache_encb_db_lte_to_kml(
-    python_file: str,
-    source: str,
-    dest: str,
-    destf: str,
-    make_csv: str,
-    start_time: int,
-    end_time: int,
-    file_time: str
+        python_file: str,
+        source: str,
+        dest: str,
+        destf: str,
+        make_csv: str,
+        start_time: int,
+        end_time: int,
+        file_time: str
 ) -> None:
 
     # Get the time the program began to execute.
@@ -44,15 +43,15 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     df = hf.query_database(
         source=source,
         query=CACHE_ENCRYPTEDB_WIFI_QUERY
-        )
+    )
 
     # Get the total number of records in the worksheet.
     number_of_rows = len(df)
 
     # Print verification message to screen.
     c.print(
-        f"""\n[grey66]
-[-] Found [dodger_blue1]{number_of_rows:,} [grey66]rows of data\n"""
+        f"\n[grey66][-] Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
+        f"of data\n"
     )
 
     # Set output file to the correct format.
@@ -63,7 +62,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     )
 
     # Open the output file using the context manager.
-    with open(f"{output_kml_file}", "w", encoding="utf-8") as f:
+    with open(output_kml_file, "w", encoding="utf-8") as f:
 
         # Write the header data of the output .kml file.
         kml_header = cache_encb_db_lte_kml_file_header()
@@ -89,8 +88,8 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
             data_source = row["data_source"]
 
             # Print message to screen with each record number added.
-            c.print(f"""
-\t[grey66]Processing Row # : [dodger_blue1]{record:04d}"""
+            c.print(
+                f"    [grey66]Processing Row # : [dodger_blue1]{record:04d}"
             )
 
             site_info = f"mcc: {mcc} | mnc: {mnc} | tac: {tac} | ci: {ci}"

@@ -2,7 +2,8 @@
 
 def cache_sqlite_query(
         start_time: int,
-        end_time: int) -> str:
+        end_time: int
+) -> str:
     """Adds the `start_time` and `end_time` values to the SQL query that will
     be run against the Cache.sqlite database file so that only records during
     the desired time frame are returned
@@ -209,8 +210,8 @@ def cache_sqlite_kml_file_body(
         horiz_acc_feet: str,
         vert_acc_meters: str,
         vert_acc_feet: str,
-        data_source: str) -> None:
-
+        data_source: str
+) -> None:
     file_body = f"""
       <Placemark>
         <name>{str(record).zfill(6)}</name>

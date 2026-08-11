@@ -15,8 +15,9 @@ from rich.prompt import Confirm
 c = Console()
 
 
-class HelperFunctions:
+class Utils:
 
+    @staticmethod
     def query_database(
             source: Path | str,
             query: str
@@ -45,6 +46,7 @@ class HelperFunctions:
         return df
 
 
+    @staticmethod
     def get_destf_name(
             dest: Path | str,
             destf: str,
@@ -54,15 +56,17 @@ class HelperFunctions:
         return Path(f"{dest}" / "{time}_{destf}.kml")
 
 
+    @staticmethod
     def get_csv_file_name(
             dest: Path | str,
             destf: str,
             time: str
     ) -> Path:
         """Get the file path to save the csv file, if selected."""
-        return Path(f"{dest}\\{time}_{destf}.csv")
+        return Path(f"{dest}" / "{time}_{destf}.csv")
 
 
+    @staticmethod
     def convert_db_timestamp(timestamp: int) -> str:
         """Converts a Cocoa Core Data timestamp to local time.
 
@@ -86,6 +90,7 @@ class HelperFunctions:
         return formatted_dt
 
 
+    @staticmethod
     def write_kml_closing() -> str:
         return """
         </Folder>
@@ -93,6 +98,7 @@ class HelperFunctions:
     </kml>"""
 
 
+    @staticmethod
     def end_program(
         number_of_rows: int,
         start_time: str,
@@ -108,44 +114,40 @@ class HelperFunctions:
         within the file path.
         """
 
-        c.print("[light_goldenrod1]===== RESULTS =====")
+        c.print("[yellow3]===== RESULTS =====")
 
         # Display the time frame between which the records were obtained
         c.print(
-            f"[grey66]Processed [italic][dodger_blue1]{count:,}[/italic]"
+            f"[grey66]Processed [dodger_blue1]{count:,}"
             f"[grey66]records from the database...\n\n"
-            f"Query command: [italic][dodger_blue1]{query_command_string}"
-            f"[/italic]\n\n"
-            f"[grey66]Beginning Date/Time Input (Local Time)  : [italic]"
-            f"[dodger_blue1] {HelperFunctions.convert_db_timestamp(start_time)}"
-            f"[/italic]\n\n"
-            f"[grey66]End Date/Time Input (Local Time)        : [italic]"
-            f"[dodger_blue1] {HelperFunctions.convert_db_timestamp(end_time)}"
-            f"[/italic]"
+            f"Query command: [italic][dodger_blue1]{query_command_string}\n\n"
+            f"[grey66]Beginning Date/Time Input (Local Time)  : "
+            f"[dodger_blue1] {Utils.convert_db_timestamp(start_time)}\n\n"
+            f"[grey66]End Date/Time Input (Local Time)        : "
+            f"[dodger_blue1] {Utils.convert_db_timestamp(end_time)}"
         )
 
         try:
             if output_csv_file:
-                # Print verification that the .csv file was created
+                # Verify that the .csv file was created
                 c.print(
                     f"[grey66]The .csv file was created successfully and is "
                     f"saved as:\n"
-                    f"    [italic][dodger_blue1]{Path(output_csv_file).name}"
-                    f"[/italic]"
+                    f"    [dodger_blue1]{Path(output_csv_file).name}"
                 )
             else:
                 pass
         except UnboundLocalError:
             pass
 
-        # Show the name of the output .kml file (including appended date/time)
+        # Show the name of the .kml file
         c.print(
-            f"[grey66]The .kml file was created with [italic][dodger_blue1]"
-            f"{count:,}[/italic] [grey66]records and is saved as:\n\n"
-            f"    [italic][dodger_blue1]{Path(output_kml_file).name}[/italic]"
+            f"[grey66]The .kml file was created with [dodger_blue1]"
+            f"{count:,} [grey66]records and is saved as:\n\n"
+            f"    [dodger_blue1]{Path(output_kml_file).name}"
         )
 
-        # Show directory where the output .kml file is saved
+        # Show directory where the .kml file is saved
         c.print(
             f"[grey66]The output file(s) are saved in the [italic]"
             f"[dodger_blue1]{Path(output_kml_file).parent}[/italic] "
@@ -154,13 +156,14 @@ class HelperFunctions:
 
         # Print the output to the screen
         c.print(
-            f"[grey66]Program completed in [italic][dodger_blue1] "
-            f"{total_time:.4f}[/italic] [grey66]seconds"
+            f"[grey66]Program completed in [dodger_blue1] "
+            f"{total_time:.4f} [grey66]seconds"
         )
 
         return None
 
 
+    @staticmethod
     def ask_open_output_kml_file(kml_file: Path | str) -> None:
         """Asks the user if they want to open the .kml file in Google Earth.
 
@@ -172,8 +175,11 @@ class HelperFunctions:
         """
 
         open_choice = (
-            Confirm.ask(
-                "[light_goldenrod1]Do you want to open the .kml file now?"
+            Prompt.ask(
+                "[yellow3]Do you want to open the .kml file now?",
+                choices=["y","n"],
+                show_choices=True,
+                default="y",
             )
         )
 

@@ -20,7 +20,7 @@ __version__ = "1.2.1"
 
 # Create the console object
 c = Console()
-install()
+install(show_locals=True, console=c)
 
 
 def print_help() -> None:

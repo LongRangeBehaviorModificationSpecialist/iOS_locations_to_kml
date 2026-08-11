@@ -75,7 +75,8 @@ Timezone Option:
 
 def convert_input_time_to_apple_time(
         date_string: str,
-        input_tz_name: str) -> float:
+        input_tz_name: str
+) -> float:
     """Converts the time string to Apple Absolute Time based on the
     user-defined timezone.
 
@@ -149,9 +150,10 @@ def make_kml(
         db: int,
         start_time: str,
         end_time: str,
-        tz: str) -> None:
+        tz: str
+) -> None:
 
-    python_file = str(Path(__file__).name)
+    python_file = Path(__file__).name
 
     tz_code = tz.upper()
     iana_name = US_TIME_ZONES.get(tz_code)
@@ -167,21 +169,18 @@ def make_kml(
     t = time.localtime()
 
     # Print the local time when the script began
-    c.print(f"""[grey66]
-=================================
-
-Program started : [dodger_blue1]\
-{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET
-
-[grey66]=================================""")
+    c.print(
+        f"[grey66]=================================\n\n"
+        "Program started : [dodger_blue1]"
+        f"{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET\n\n
+        "[grey66]================================="
+    )
 
     # Format the local time to append to the beginning of the output file name
     file_time = time.strftime("%Y-%m-%d_%H%M%S", t)
 
     if db == 1:
-        from cache_sqlite_to_kml import (
-            write_cache_sqlite_to_kml
-        )
+        from cache_sqlite_to_kml import(write_cache_sqlite_to_kml)
         write_cache_sqlite_to_kml(
             python_file=python_file,
             source=source,
@@ -194,9 +193,7 @@ Program started : [dodger_blue1]\
         )
 
     elif db == 2:
-        from cache_encb_db_wifi_to_kml import (
-            write_cache_encb_db_wifi_to_kml
-        )
+        from cache_encb_db_wifi_to_kml import(write_cache_encb_db_wifi_to_kml)
         write_cache_encb_db_wifi_to_kml(
             python_file=python_file,
             source=source,
@@ -209,9 +206,7 @@ Program started : [dodger_blue1]\
         )
 
     elif db == 3:
-        from cache_encb_db_lte_to_kml import (
-            write_cache_encb_db_lte_to_kml
-        )
+        from cache_encb_db_lte_to_kml import(write_cache_encb_db_lte_to_kml)
         write_cache_encb_db_lte_to_kml(
             python_file=python_file,
             source=source,
@@ -224,9 +219,7 @@ Program started : [dodger_blue1]\
         )
 
     elif db == 4:
-        from cloud_v2_sqlite_signif_loc_to_kml import (
-            write_cache_v2_signif_loc_to_kml
-        )
+        from cloud_v2_sqlite_signif_loc_to_kml import(write_cache_v2_signif_loc_to_kml)
         write_cache_v2_signif_loc_to_kml(
             ppython_file=python_file,
             source=source,
@@ -239,9 +232,7 @@ Program started : [dodger_blue1]\
         )
 
     elif db == 5:
-        from local_sqlite_signif_loc_visits_to_kml import (
-            write_local_sqlite_signif_visits_to_kml
-        )
+        from local_sqlite_signif_loc_visits_to_kml import(write_local_sqlite_signif_visits_to_kml)
         write_local_sqlite_signif_visits_to_kml(
             python_file=python_file,
             source=source,
@@ -254,9 +245,7 @@ Program started : [dodger_blue1]\
         )
 
     elif db == 6:
-        from local_sqlite_vehicle_loc_to_kml import (
-            write_local_sqlite_vehicle_loc_to_kml
-        )
+        from local_sqlite_vehicle_loc_to_kml import(write_local_sqlite_vehicle_loc_to_kml)
         write_local_sqlite_vehicle_loc_to_kml(
             python_file=python_file,
             source=source,

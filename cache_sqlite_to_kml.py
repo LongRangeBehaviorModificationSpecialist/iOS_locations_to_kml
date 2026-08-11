@@ -35,7 +35,7 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
     # Query the database file.
     df = Utils.query_database(
         source=source,
-        query=CACHE_SQLITE_QUERY
+        query=CACHE_SQLITE_QUERY,
     )
 
     # Get the total number of records returned
@@ -57,7 +57,7 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
     # Open the output file
     with open(kml_file, "w", encoding="utf-8") as f:
 
-        # Write the header data of the .kml file
+        # Write the header block of the .kml file
         kml_header = cache_sqlite_kml_file_header()
 
         f.write(kml_header)
@@ -83,7 +83,7 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
             vert_acc_feet = row["vertical_accuracy_feet"]
             data_source = row["data_source"]
 
-            # Print message to screen with each record number added
+            # Print message to screen with each record number
             c.print(
                 f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
                 "[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
@@ -109,10 +109,10 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
 
             f.write(kml_body)
 
-            # Increment the counter variable for the next record
+            # Increment the counter variable
             count += 1
 
-        # Write the closing to the .kml file
+        # Write the closing block of the .kml file
         f.write(f"{Utils.write_kml_closing()}")
 
     # If the user chose to save a .csv file

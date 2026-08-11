@@ -180,7 +180,7 @@ def make_kml(
     file_time = time.strftime("%Y-%m-%d_%H%M%S", t)
 
     if db == 1:
-        from cache_sqlite_to_kml import(write_cache_sqlite_to_kml)
+        from cache_sqlite_to_kml import write_cache_sqlite_to_kml
         write_cache_sqlite_to_kml(
             python_file=python_file,
             source=source,
@@ -193,7 +193,7 @@ def make_kml(
         )
 
     elif db == 2:
-        from cache_encb_db_wifi_to_kml import(write_cache_encb_db_wifi_to_kml)
+        from cache_encb_db_wifi_to_kml import write_cache_encb_db_wifi_to_kml
         write_cache_encb_db_wifi_to_kml(
             python_file=python_file,
             source=source,
@@ -206,7 +206,7 @@ def make_kml(
         )
 
     elif db == 3:
-        from cache_encb_db_lte_to_kml import(write_cache_encb_db_lte_to_kml)
+        from cache_encb_db_lte_to_kml import write_cache_encb_db_lte_to_kml
         write_cache_encb_db_lte_to_kml(
             python_file=python_file,
             source=source,
@@ -219,7 +219,7 @@ def make_kml(
         )
 
     elif db == 4:
-        from cloud_v2_sqlite_signif_loc_to_kml import(write_cache_v2_signif_loc_to_kml)
+        from cloud_v2_sqlite_signif_loc_to_kml import write_cache_v2_signif_loc_to_kml
         write_cache_v2_signif_loc_to_kml(
             ppython_file=python_file,
             source=source,
@@ -232,7 +232,7 @@ def make_kml(
         )
 
     elif db == 5:
-        from local_sqlite_signif_loc_visits_to_kml import(write_local_sqlite_signif_visits_to_kml)
+        from local_sqlite_signif_loc_visits_to_kml import write_local_sqlite_signif_visits_to_kml
         write_local_sqlite_signif_visits_to_kml(
             python_file=python_file,
             source=source,
@@ -245,7 +245,7 @@ def make_kml(
         )
 
     elif db == 6:
-        from local_sqlite_vehicle_loc_to_kml import(write_local_sqlite_vehicle_loc_to_kml)
+        from local_sqlite_vehicle_loc_to_kml import write_local_sqlite_vehicle_loc_to_kml
         write_local_sqlite_vehicle_loc_to_kml(
             python_file=python_file,
             source=source,

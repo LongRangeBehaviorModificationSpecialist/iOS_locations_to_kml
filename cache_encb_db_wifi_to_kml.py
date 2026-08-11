@@ -42,7 +42,7 @@ def write_cache_encb_db_wifi_to_kml(
         query=CACHE_ENCRYPTEDB_WIFI_QUERY,
     )
 
-    # Get the total number of records in the worksheet
+    # Get the total number of records returned
     number_of_rows = len(df)
 
     # Print verification message to screen
@@ -61,7 +61,7 @@ def write_cache_encb_db_wifi_to_kml(
     # Open the output file
     with open(kml_file, "w", encoding="utf-8") as f:
 
-        # Write the header of the .kml file
+        # Write the header block of the .kml file
         kml_header = cache_encb_db_wifi_kml_file_header()
 
         f.write(kml_header)
@@ -134,12 +134,12 @@ def write_cache_encb_db_wifi_to_kml(
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=csv_file,
+        csv_file=csv_file,
         count=count,
-        output_kml_file=kml_file,
+        kml_file=kml_file,
         total_time=total_time,
     )
 
     # Ask user if they want to open the output file
-    Utils.ask_open_output_kml_file(kml_file=kml_file)
+    Utils.ask_open_kml_file(kml_file=kml_file)
 

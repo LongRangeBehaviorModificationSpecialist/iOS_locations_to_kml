@@ -33,13 +33,13 @@ def write_cache_encb_db_wifi_to_kml(
     # Generate the SQL query
     CACHE_ENCRYPTEDB_WIFI_QUERY = cache_encb_db_wifi_query(
         start_time=start_time,
-        end_time=end_time
+        end_time=end_time,
     )
 
     # Query the database
     df = Utils.query_database(
         source=source,
-        query=CACHE_ENCRYPTEDB_WIFI_QUERY
+        query=CACHE_ENCRYPTEDB_WIFI_QUERY,
     )
 
     # Get the total number of records in the worksheet
@@ -105,13 +105,13 @@ def write_cache_encb_db_wifi_to_kml(
 
             f.write(kml_body)
 
-            # Increment the counter variable for the next record
+            # Increment the counter variable
             count += 1
 
-        # Write closing data to the .kml file
+        # Write closing block to the .kml file
         f.write(f"{Utils.write_kml_closing()}")
 
-    # If the user chose to make a .csv file
+    # If the user chose to save a .csv file
     match make_csv:
         case "y":
             csv_file = Utils.get_csv_file_name(
@@ -126,7 +126,7 @@ def write_cache_encb_db_wifi_to_kml(
     # Time the script completed
     ending_time = time.perf_counter()
 
-    # Total time the script took to complete
+    # Total time to complete
     total_time = ending_time - file_start_time
 
     Utils.end_program(

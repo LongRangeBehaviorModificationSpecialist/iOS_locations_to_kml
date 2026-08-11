@@ -49,7 +49,7 @@ def write_local_sqlite_signif_visits_to_kml(
     )
 
     # Set output file to the correct format.
-    kml_file = hf.get_destf_name(
+    kml_file = Utils.get_destf_name(
         dest=dest,
         destf=destf,
         time=file_time,
@@ -114,7 +114,7 @@ def write_local_sqlite_signif_visits_to_kml(
 
     # If the user chose to save a .csv file
     if make_csv.lower() == "y":
-        csv_file = hf.get_csv_file_name(
+        csv_file = Utils.get_csv_file_name(
             dest=dest,
             destf=destf,
             time=file_time,
@@ -134,11 +134,11 @@ def write_local_sqlite_signif_visits_to_kml(
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=csv_file,
+        csv_file=csv_file,
         count=count,
-        output_kml_file=kml_file,
+        kml_file=kml_file,
         total_time=total_time
     )
 
     # Ask user if they want to automatically open the output file.
-    Utils.ask_open_output_kml_file(kml_file=kml_file)
+    Utils.ask_open_kml_file(kml_file=kml_file)

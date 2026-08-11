@@ -32,11 +32,9 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     )
 
     # Generate the SQL query
-    CACHE_ENCRYPTEDB_WIFI_QUERY = (
-        cache_encb_db_lte_query(
-            start_time=start_time,
-            end_time=end_time,
-        )
+    CACHE_ENCRYPTEDB_WIFI_QUERY = cache_encb_db_lte_query(
+        start_time=start_time,
+        end_time=end_time,
     )
 
     # Query the database file

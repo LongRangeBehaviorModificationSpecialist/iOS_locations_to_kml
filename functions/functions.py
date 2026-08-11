@@ -9,7 +9,7 @@ import sqlite3
 import sys
 import webbrowser
 
-from rich.prompt import Confirm
+from rich.prompt import Prompt
 
 
 c = Console()
@@ -103,9 +103,9 @@ class Utils:
         number_of_rows: int,
         start_time: str,
         end_time: str,
-        output_csv_file: str,
+        csv_file: str,
         count: int,
-        output_kml_file: str,
+        kml_file: str,
         total_time: str,
         query_command_string: str,
     ) -> None:
@@ -128,7 +128,7 @@ class Utils:
         )
 
         try:
-            if output_csv_file:
+            if csv_file:
                 # Verify that the .csv file was created
                 c.print(
                     f"[grey66]The .csv file was created successfully and is "
@@ -144,13 +144,13 @@ class Utils:
         c.print(
             f"[grey66]The .kml file was created with [dodger_blue1]"
             f"{count:,} [grey66]records and is saved as:\n\n"
-            f"    [dodger_blue1]{Path(output_kml_file).name}"
+            f"    [dodger_blue1]{Path(kml_file).name}"
         )
 
         # Show directory where the .kml file is saved
         c.print(
             f"[grey66]The output file(s) are saved in the [italic]"
-            f"[dodger_blue1]{Path(output_kml_file).parent}[/italic] "
+            f"[dodger_blue1]{Path(kml_file).parent}[/italic] "
             f"[grey66]directory"
         )
 
@@ -164,7 +164,7 @@ class Utils:
 
 
     @staticmethod
-    def ask_open_output_kml_file(kml_file: Path | str) -> None:
+    def ask_open_kml_file(kml_file: Path | str) -> None:
         """Asks the user if they want to open the .kml file in Google Earth.
 
         If the user answers "y", then the .kml file is opened and this
@@ -183,13 +183,12 @@ class Utils:
             )
         )
 
-        if open_choice == True:
-            c.print(
-                "[dodger_blue1]Opening the .kml file with Google Earth..."
-            )
-            webbrowser.open(kml_file)
-            return None
-        else:
-            c.print("[yellow3]Very good then. Exiting now...")
-            # Exit the program
-            sys.exit(0)
+        match open_choice:
+            case "y":
+                c.print("[dodger_blue1]Opening the .kml file...")
+                webbrowser.open(kml_file)
+                return None
+            case "n":
+                c.print("[yellow3]Very good then. Exiting now...")
+                # Exit the program
+                sys.exit(0)

@@ -32,11 +32,8 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
         end_time=end_time,
     )
 
-    # Query the database file.
-    df = Utils.query_database(
-        source=source,
-        query=CACHE_SQLITE_QUERY,
-    )
+    # Query the database
+    df = Utils.query_database(source=source, query=CACHE_SQLITE_QUERY)
 
     # Get the total number of records returned
     number_of_rows = len(df)

@@ -138,12 +138,12 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=csv_file,
+        csv_file=csv_file,
         count=count,
-        output_kml_file=kml_file,
+        kml_file=kml_file,
         total_time=total_time,
     )
 
     # Ask user if they want to open the output file
-    Utils.ask_open_output_kml_file(kml_file=kml_file)
+    Utils.ask_open_kml_file(kml_file=kml_file)
 

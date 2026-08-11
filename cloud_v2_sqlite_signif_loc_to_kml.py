@@ -23,20 +23,21 @@ def write_cache_v2_signif_loc_to_kml(
         file_time: str
 ) -> None:
 
-    # Get the time the program began to execute.
+    # Time the program began
     file_start_time = time.perf_counter()
 
+    # Reconstruct the command line entry
     query_command_string = f"""python .\{python_file} --source "{source}" \
 --dest "{dest}" --destf "{destf}" --csv {make_csv} --db 4 --starttime \
 {start_time} --endtime {end_time}"""
 
-    # Generate the SQL query to include the start_time and end_time values.
+    # Generate the SQL query
     CLOUDV2_SIG_LOC_QUERY = cloud_v2_sqlite_signif_loc_query(
         start_time=start_time,
-        end_time=end_time
+        end_time=end_time,
     )
 
-    # Query the database file.
+    # Query the database
     df = hf.query_database(source=source, query=CLOUDV2_SIG_LOC_QUERY)
 
     # Get the total number of records returned
@@ -48,7 +49,7 @@ def write_cache_v2_signif_loc_to_kml(
         "of data\n"
     )
 
-    # Set kml file name
+    # Set the .kml file name
     kml_file = Utils.get_destf_name(
         dest=dest,
         destf=destf,
@@ -58,12 +59,12 @@ def write_cache_v2_signif_loc_to_kml(
     # Open the output file
     with open(kml_file, "w", encoding="utf-8") as f:
 
-        # Write the header data of the output .kml file.
+        # Write the header block to the .kml file
         kml_header = cloud_v2_sqlite_signif_loc_kml_file_header()
 
         f.write(kml_header)
 
-        # Initialize a counter variable to keep track of number of records.
+        # Initialize a counter variable
         count = 0
 
         # Set variables from the dataframe
@@ -79,7 +80,7 @@ def write_cache_v2_signif_loc_to_kml(
             add_expire_utc = row["address_expire_date_utc"]
             data_source = row["data_source"]
 
-            # Print message to screen with each record number added.
+            # Print message to screen with each record number
             c.print(
                 f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
                 f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
@@ -104,15 +105,15 @@ def write_cache_v2_signif_loc_to_kml(
             # Increment the counter variable
             count += 1
 
-        # Write the closing data to the output .kml file.
+        # Write the closing block to the .kml file
         f.write(f"{Utils.write_kml_closing()}")
 
-    # If the user chose to make a .csv file containing the parsed records.
+    # If the user choose to save a .csv file
     if make_csv.lower() == "y":
-        csv_file = hf.get_csv_file_name(
+        csv_file = Utils.get_csv_file_name(
             dest=dest,
             destf=destf,
-            time=file_time
+            time=file_time,
         )
         df.to_csv(output_csv_file, index=False)
     else:
@@ -135,5 +136,5 @@ def write_cache_v2_signif_loc_to_kml(
         total_time=total_time,
     )
 
-    # Ask user if they want to automatically open the output file.
-    Utils.ask_open_output_kml_file(kml_file=kml_file)
+    # Ask user if they want to open the .kml file
+    Utils.ask_open_kml_file(kml_file=kml_file)

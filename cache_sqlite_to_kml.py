@@ -138,11 +138,11 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=csv_file,
+        csv_file=csv_file,
         count=count,
-        output_kml_file=kml_file,
+        kml_file=kml_file,
         total_time=total_time,
     )
 
     # Ask user if they want to open the .kml file
-    Utils.ask_open_output_kml_file(kml_file=kml_file)
+    Utils.ask_open_kml_file(kml_file=kml_file)

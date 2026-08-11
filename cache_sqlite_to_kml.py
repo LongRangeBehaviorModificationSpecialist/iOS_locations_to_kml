@@ -17,7 +17,7 @@ c = Console()
 
 def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
 
-    # Get the time the program began
+    # Time the program began
     file_start_time = time.perf_counter()
 
     query_command_string = (
@@ -26,7 +26,7 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
         f"'{end_time}'"
     )
 
-    # Generate the SQL query to include the start_time and end_time values.
+    # Generate the SQL query
     CACHE_SQLITE_QUERY = cache_sqlite_query(
         start_time=start_time,
         end_time=end_time,
@@ -38,31 +38,31 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
         query=CACHE_SQLITE_QUERY
     )
 
-    # Get the total number of records in the worksheet.
+    # Get the total number of records returned
     number_of_rows = len(df)
 
-    # Print verification message to screen.
+    # Print verification message to screen
     c.print(
         f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
         "of data\n"
     )
 
-    # Set output file to the correct format.
-    output_kml_file = Utils.get_destf_name(
+    # Set .kml file name
+    kml_file = Utils.get_destf_name(
         dest=dest,
         destf=destf,
         time=file_time,
     )
 
-    # Open the output file using the context manager
-    with open(output_kml_file, "w", encoding="utf-8") as f:
+    # Open the output file
+    with open(kml_file, "w", encoding="utf-8") as f:
 
-        # Write the header data of the output .kml file
+        # Write the header data of the .kml file
         kml_header = cache_sqlite_kml_file_header()
 
         f.write(kml_header)
 
-        # Initialize a counter variable to keep track of number of records.
+        # Initialize a counter variable
         count = 0
 
         # Set variables from the dataframe
@@ -112,27 +112,25 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
             # Increment the counter variable for the next record
             count += 1
 
-        # Write the closing data to the .kml file
+        # Write the closing to the .kml file
         f.write(f"{Utils.write_kml_closing()}")
 
-    # If the user chose to make a .csv file containing the parsed records
-    if make_csv.lower() == "y":
-        output_csv_file = Utils.get_csv_file_name(
-            dest=dest,
-            destf=destf,
-            time=file_time,
-        )
-        df.to_csv(
-            output_csv_file,
-            index=False,
-        )
-    else:
-        pass
+    # If the user chose to save a .csv file
+    match make_csv:
+        case "y":
+            csv_file = Utils.get_csv_file_name(
+                dest=dest,
+                destf=destf,
+                time=file_time,
+            )
+            df.to_csv(output_csv_file, index=False)
+        case "n":
+            pass
 
-    # Get the time the script completed
+    # Time the script completed
     ending_time = time.perf_counter()
 
-    # Get the total time the script took to complete
+    # Get the total time
     total_time = ending_time - file_start_time
 
     Utils.end_program(
@@ -140,11 +138,11 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
         number_of_rows=number_of_rows,
         start_time=start_time,
         end_time=end_time,
-        output_csv_file=output_csv_file,
+        output_csv_file=csv_file,
         count=count,
-        output_kml_file=output_kml_file,
+        output_kml_file=kml_file,
         total_time=total_time,
     )
 
     # Ask user if they want to open the .kml file
-    Utils.ask_open_output_kml_file(kml_file=output_kml_file)
+    Utils.ask_open_output_kml_file(kml_file=kml_file)

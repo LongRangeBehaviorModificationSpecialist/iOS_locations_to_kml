@@ -243,64 +243,19 @@ examine:
                 write_cache_sqlite_to_kml(conversion_args)
             case "2":
                 from cache_encb_db_wifi_to_kml import write_cache_encb_db_wifi_to_kml
-                write_cache_encb_db_wifi_to_kml(
-                    python_file=python_file,
-                    source=source,
-                    dest=dest,
-                    destf=destf,
-                    make_csv=make_csv,
-                    start_time=start_time,
-                    end_time=end_time,
-                    file_time=file_time
-                )
+                write_cache_encb_db_wifi_to_kml(conversion_args)
             case "3":
                 from cache_encb_db_lte_to_kml import write_cache_encb_db_lte_to_kml
-                write_cache_encb_db_lte_to_kml(
-                    python_file=python_file,
-                    source=source,
-                    dest=dest,
-                    destf=destf,
-                    make_csv=make_csv,
-                    start_time=start_time,
-                    end_time=end_time,
-                    file_time=file_time
-                )
+                write_cache_encb_db_lte_to_kml(conversion_args)
             case "4":
                 from cloud_v2_sqlite_signif_loc_to_kml import write_cache_v2_signif_loc_to_kml
-                write_cache_v2_signif_loc_to_kml(
-                    python_file=python_file,
-                    source=source,
-                    dest=dest,
-                    destf=destf,
-                    make_csv=make_csv,
-                    start_time=start_time,
-                    end_time=end_time,
-                    file_time=file_time
-                )
+                write_cache_v2_signif_loc_to_kml(conversion_args)
             case "5":
                 from local_sqlite_signif_loc_visits_to_kml import write_local_sqlite_signif_visits_to_kml
-                write_local_sqlite_signif_visits_to_kml(
-                    python_file=python_file,
-                    source=source,
-                    dest=dest,
-                    destf=destf,
-                    make_csv=make_csv,
-                    start_time=start_time,
-                    end_time=end_time,
-                    file_time=file_time
-                )
+                write_local_sqlite_signif_visits_to_kml(conversion_args)
             case "6":
                 from local_sqlite_vehicle_loc_to_kml import write_local_sqlite_vehicle_loc_to_kml
-                write_local_sqlite_vehicle_loc_to_kml(
-                    python_file=python_file,
-                    source=source,
-                    dest=dest,
-                    destf=destf,
-                    make_csv=make_csv,
-                    start_time=start_time,
-                    end_time=end_time,
-                    file_time=file_time
-                )
+                write_local_sqlite_vehicle_loc_to_kml(conversion_args)
             case _:
                 c.print(
                     "The code to examine the database you entered is not "

@@ -120,7 +120,7 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
                 destf=destf,
                 time=file_time,
             )
-            df.to_csv(output_csv_file, index=False)
+            df.to_csv(csv_file, index=False)
         case "n":
             pass
 

@@ -51,7 +51,7 @@ class HelperFunctions:
             time: str
     ) -> Path:
         """Add date/time and proper file extension to output file name."""
-        return Path(f"{dest}\\{time}_{destf}.kml")
+        return Path(f"{dest}" / "{time}_{destf}.kml")
 
 
     def get_csv_file_name(
@@ -112,9 +112,9 @@ class HelperFunctions:
 
         # Display the time frame between which the records were obtained
         c.print(
-            f"[grey66][-] Processed [italic][dodger_blue1]{count:,}[/italic]"
+            f"[grey66]Processed [italic][dodger_blue1]{count:,}[/italic]"
             f"[grey66]records from the database...\n\n"
-            f"[-] Query command: [italic][dodger_blue1]{query_command_string}"
+            f"Query command: [italic][dodger_blue1]{query_command_string}"
             f"[/italic]\n\n"
             f"[grey66]Beginning Date/Time Input (Local Time)  : [italic]"
             f"[dodger_blue1] {HelperFunctions.convert_db_timestamp(start_time)}"
@@ -128,7 +128,7 @@ class HelperFunctions:
             if output_csv_file:
                 # Print verification that the .csv file was created
                 c.print(
-                    f"[grey66][-] The .csv file was created successfully and is "
+                    f"[grey66]The .csv file was created successfully and is "
                     f"saved as:\n"
                     f"    [italic][dodger_blue1]{Path(output_csv_file).name}"
                     f"[/italic]"
@@ -140,28 +140,28 @@ class HelperFunctions:
 
         # Show the name of the output .kml file (including appended date/time)
         c.print(
-            f"[grey66][-] The .kml file was created with [italic][dodger_blue1]"
+            f"[grey66]The .kml file was created with [italic][dodger_blue1]"
             f"{count:,}[/italic] [grey66]records and is saved as:\n\n"
             f"    [italic][dodger_blue1]{Path(output_kml_file).name}[/italic]"
         )
 
         # Show directory where the output .kml file is saved
         c.print(
-            f"[grey66][-] The output file(s) are saved in the [italic]"
+            f"[grey66]The output file(s) are saved in the [italic]"
             f"[dodger_blue1]{Path(output_kml_file).parent}[/italic] "
             f"[grey66]directory"
         )
 
         # Print the output to the screen
         c.print(
-            f"[grey66][-] Program completed in [italic][dodger_blue1] "
+            f"[grey66]Program completed in [italic][dodger_blue1] "
             f"{total_time:.4f}[/italic] [grey66]seconds"
         )
 
         return None
 
 
-    def ask_open_output_kml_file(kml_file: Path) -> None:
+    def ask_open_output_kml_file(kml_file: Path | str) -> None:
         """Asks the user if they want to open the .kml file in Google Earth.
 
         If the user answers "y", then the .kml file is opened and this
@@ -173,20 +173,17 @@ class HelperFunctions:
 
         open_choice = (
             Confirm.ask(
-                "[light_goldenrod1][-] Do you want to open the .kml file now?"
+                "[light_goldenrod1]Do you want to open the .kml file now?"
             )
         )
 
         if open_choice == True:
             c.print(
-                "[dodger_blue1][-] Opening the .kml file with Google Earth "
-                "and then exiting..."
+                "[dodger_blue1]Opening the .kml file with Google Earth..."
             )
             webbrowser.open(kml_file)
             return None
         else:
-            c.print(
-                "[light_goldenrod1][-] Very good then. Exiting now..."
-            )
+            c.print("[yellow3]Very good then. Exiting now...")
             # Exit the program
             sys.exit(0)

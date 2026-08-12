@@ -76,19 +76,18 @@ Timezone Option:
 
 def get_options():
     """Get the required options to pass to the make_kml() function."""
-
     # Display a script header panel
     console.print("")
     console.print(
         Panel.fit(
-            "[bold cyan]Make .kml from database file[/bold cyan]\n"
+            "[bold][cyan]Make .kml from database file[/bold][grey66]\n"
             "[dim]Please answer the following questions to configure the "
             "application.[/dim]",
             border_style="cyan"
         )
     )
 
-    # Ask questions to get the variables to pass to the make_kml_prompted() function
+    # Ask questions to get the variables for the make_kml_prompted() function
     # Using rich to display the final arguments
     source     = GetOptions.get_source_path()
     dest       = GetOptions.get_dest_path()
@@ -102,24 +101,24 @@ def get_options():
     make_kml(
         source=source,
         dest=dest,
-        destf=destf,
-        csv=csv,
-        db=db,
+        # destf=destf,
+        make_csv=make_csv,
+        db_type=db_type,
         start_time=start_time,
         end_time=end_time,
-        tz=tz
+        tz_code=tz_code
     )
 
 
 def make_kml(
         source: Path,
         dest: Path,
-        destf: str,
-        csv: str,
-        db: int,
+        # destf: str,
+        make_csv: bool,
+        db_type: int,
         start_time: str,
         end_time: str,
-        tz: str
+        tz_code: str
 ) -> None:
 
     python_file = Path(__file__).name
@@ -135,14 +134,10 @@ def make_kml(
 
     # Get local time when the script begins
     t = time.localtime()
-
+    ts = time.strftime("%d-%b-%Y at %H:%M:%S", t)
+    
     # Print the local time when the script began
-    console.print(
-        f"[grey66]=================================\n\n"
-        "Program started : [dodger_blue1]"
-        f"{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET\n\n"
-        "[grey66]================================="
-    )
+    console.print("Program started : [dodger_blue1]{ts)} ET")
 
     # Format the local time to append to the beginning of the output file name
     file_time = time.strftime("%Y-%m-%d_%H%M%S", t)

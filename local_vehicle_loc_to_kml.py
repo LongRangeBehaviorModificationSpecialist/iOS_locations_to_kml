@@ -26,9 +26,11 @@ def write_local_sqlite_vehicle_loc_to_kml(
     # Time the program
     file_start_time = time.perf_counter()
 
-    query_command_string = f"""python .\{python_file} --source "{source}" \
---dest "{dest}" --destf "{destf}" --csv {make_csv} --db 6 --starttime \
-{start_time} --endtime {end_time}"""
+    query_command_string = (
+        f"python .\\{python_file} --source \"{source}\" --dest \"{dest}\" "
+        f"[--make_csv | None] --db_type {db_type} --start_time \"{start_time}\" "
+        f"--end_time \"{end_time}\" --tz_code \"{tz_code}\""
+    )
 
     # Generate the SQL query
     LOCAL_SQLITE_VEH_LOC_QUERY = local_vehicle_loc_query(
@@ -44,15 +46,8 @@ def write_local_sqlite_vehicle_loc_to_kml(
 
     # Print verification message to screen
     console.print(
-        f"\n[grey66][-] Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
-        f"of data\n"
-    )
-
-    # Set output file to the correct format
-    kml_file = Utils.get_destf_name(
-        dest=dest,
-        destf=destf,
-        time=file_time,
+        f"[grey66][-] Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
+        f"of data"
     )
 
     # Open the output file
@@ -80,7 +75,7 @@ def write_local_sqlite_vehicle_loc_to_kml(
 
             # Print message to screen with each record number added
             console.print(
-                f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
+                f"[grey66]Processing Row #: [dodger_blue1]{record:04d} "
                 f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
             )
 
@@ -93,7 +88,7 @@ def write_local_sqlite_vehicle_loc_to_kml(
                 longitude=longitude,
                 location_uncertainty=location_uncertainty,
                 identifier=identifier,
-                data_source=data_source
+                data_source=data_source,
             )
 
             f.write(kml_body)
@@ -130,6 +125,8 @@ def write_local_sqlite_vehicle_loc_to_kml(
         count=count,
         kml_file=kml_file,
         total_time=total_time,
+        start_time_apple=start_time_apple,
+        end_time_apple=end_time_apple,
     )
 
     # Ask user if they want to open the output file

@@ -125,7 +125,6 @@ def write_cache_to_kml(args: ConversionArgs) -> None:
     # Write summary results to the screen
     Utils.end_program(
         query_command_string=query_command_string,
-        # number_of_rows=number_of_rows,
         start_time=args.start_time_apple,
         end_time=args.end_time_apple,
         csv_file=args.csv_file_path,

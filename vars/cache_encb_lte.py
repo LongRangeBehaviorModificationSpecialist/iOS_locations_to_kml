@@ -1,6 +1,6 @@
 # !/usr/bin/env python3
 
-def cache_encb_db_lte_query(
+def cache_encb_lte_query(
         start_time: int,
         end_time: int
 ) -> str:
@@ -35,7 +35,7 @@ ORDER BY
     return CACHE_ENCRYPTEDB_LTE_QUERY
 
 
-def cache_encb_db_lte_kml_file_header() -> str:
+def cache_encb_lte_kml_header() -> str:
     CACHE_ENCRYPTEDB_LTE_KML_FILE_HEADER = f"""<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2"
   xmlns:gx="http://www.google.com/kml/ext/2.2"
@@ -158,7 +158,7 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
     return CACHE_ENCRYPTEDB_LTE_KML_FILE_HEADER
 
 
-def cache_encb_db_lte_kml_file_body(
+def cache_encb_lte_kml_body(
         record: str,
         latitude: int,
         longitude: int,

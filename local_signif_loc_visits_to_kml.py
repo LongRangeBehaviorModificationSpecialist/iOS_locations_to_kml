@@ -3,14 +3,14 @@
 from rich.console import Console
 import time
 
-from functions.functions import Utils
-from vars.local_sqlite_signif_loc_visits import (
-    local_sqlite_signif_loc_visits_query,
-    local_sqlite_signif_loc_visits_kml_file_header,
-    local_sqlite_signif_loc_visits_kml_file_body
+from utils import Utils
+from vars.local_signif_loc_visits import (
+    local_signif_loc_visits_query,
+    local_signif_loc_visits_kml_header,
+    local_signif_loc_visits_kml_body
 )
 
-c = Console()
+console = Console()
 
 def write_local_sqlite_signif_visits_to_kml(
         python_file: str,
@@ -31,7 +31,7 @@ def write_local_sqlite_signif_visits_to_kml(
 {start_time} --endtime {end_time}"""
 
     # Generate the SQL query to include the start_time and end_time values.
-    LOCAL_SIG_LOC_VISIT_QUERY = local_sqlite_signif_loc_visits_query(
+    LOCAL_SIG_LOC_VISIT_QUERY = local_signif_loc_visits_query(
         start_time=start_time,
         end_time=end_time,
     )
@@ -43,7 +43,7 @@ def write_local_sqlite_signif_visits_to_kml(
     number_of_rows = len(df)
 
     # Print verification message to screen.
-    c.print(
+    console.print(
         f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
         f"of data\n"
     )
@@ -59,7 +59,7 @@ def write_local_sqlite_signif_visits_to_kml(
     with open(kml_file, "w", encoding="utf-8") as f:
 
         # Write the header of the .kml file
-        kml_header = local_sqlite_signif_loc_visits_kml_file_header()
+        kml_header = local_signif_loc_visits_kml_header()
 
         f.write(kml_header)
 
@@ -83,13 +83,13 @@ def write_local_sqlite_signif_visits_to_kml(
             data_source = row["data_source"]
 
             # Print message to screen with each record number
-            c.print(
+            console.print(
                 f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
                 f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
             )
 
             # Write the data from each record to the output .kml file.
-            kml_body = local_sqlite_signif_loc_visits_kml_file_body(
+            kml_body = local_signif_loc_visits_kml_body(
                 record=record,
                 data_point_count=data_point_count,
                 location_of_interest_id=location_of_interest_id,

@@ -3,14 +3,14 @@
 from rich.console import Console
 import time
 
-from functions.functions import Utils
-from vars.local_sqlite_vehicle_loc import (
-    local_sqlite_vehicle_loc_query,
-    local_sqlite_vehicle_loc_kml_file_header,
-    local_sqlite_vehicle_loc_kml_file_body
+from utils import Utils
+from vars.local_vehicle_loc import (
+    local_vehicle_loc_query,
+    local_vehicle_loc_kml_header,
+    local_vehicle_loc_kml_body
 )
 
-c = Console()
+console = Console()
 
 def write_local_sqlite_vehicle_loc_to_kml(
         python_file: str,
@@ -31,7 +31,7 @@ def write_local_sqlite_vehicle_loc_to_kml(
 {start_time} --endtime {end_time}"""
 
     # Generate the SQL query
-    LOCAL_SQLITE_VEH_LOC_QUERY = local_sqlite_vehicle_loc_query(
+    LOCAL_SQLITE_VEH_LOC_QUERY = local_vehicle_loc_query(
         start_time=start_time,
         end_time=end_time,
     )
@@ -43,7 +43,7 @@ def write_local_sqlite_vehicle_loc_to_kml(
     number_of_rows = len(df)
 
     # Print verification message to screen
-    c.print(
+    console.print(
         f"\n[grey66][-] Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
         f"of data\n"
     )
@@ -59,7 +59,7 @@ def write_local_sqlite_vehicle_loc_to_kml(
     with open(kml_file, "w", encoding="utf-8") as f:
 
         # Write the header block of the .kml file
-        kml_header = local_sqlite_vehicle_loc_kml_file_header()
+        kml_header = local_vehicle_loc_kml_header()
 
         f.write(kml_header)
 
@@ -79,13 +79,13 @@ def write_local_sqlite_vehicle_loc_to_kml(
             data_source = row["data_source"]
 
             # Print message to screen with each record number added
-            c.print(
+            console.print(
                 f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
                 f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
             )
 
             # Write the data from each record to the .kml file
-            kml_body = local_sqlite_vehicle_loc_kml_file_body(
+            kml_body = local_vehicle_loc_kml_body(
                 record=record,
                 utc_time=utc_time,
                 location_time_utc=location_time_utc,

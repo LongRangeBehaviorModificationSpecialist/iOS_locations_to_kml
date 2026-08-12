@@ -3,14 +3,14 @@
 from rich.console import Console
 import time
 
-from functions.functions import Utils
-from vars.cloud_v2_sqlite_signif_loc import (
-    cloud_v2_sqlite_signif_loc_query,
-    cloud_v2_sqlite_signif_loc_kml_file_header,
-    cloud_v2_sqlite_signif_loc_kml_file_body
+from utils import Utils
+from vars.cloud_v2_signif_loc import (
+    cloud_v2_signif_loc_query,
+    cloud_v2_signif_loc_kml_header,
+    cloud_v2_signif_loc_kml_body
 )
 
-c = Console()
+console = Console()
 
 def write_cache_v2_signif_loc_to_kml(
         python_file: str,
@@ -32,7 +32,7 @@ def write_cache_v2_signif_loc_to_kml(
 {start_time} --endtime {end_time}"""
 
     # Generate the SQL query
-    CLOUDV2_SIG_LOC_QUERY = cloud_v2_sqlite_signif_loc_query(
+    CLOUDV2_SIG_LOC_QUERY = cloud_v2_signif_loc_query(
         start_time=start_time,
         end_time=end_time,
     )
@@ -44,7 +44,7 @@ def write_cache_v2_signif_loc_to_kml(
     number_of_rows = len(df)
 
     # Print verification message to screen
-    c.print(
+    console.print(
         f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
         "of data\n"
     )
@@ -60,7 +60,7 @@ def write_cache_v2_signif_loc_to_kml(
     with open(kml_file, "w", encoding="utf-8") as f:
 
         # Write the header block to the .kml file
-        kml_header = cloud_v2_sqlite_signif_loc_kml_file_header()
+        kml_header = cloud_v2_signif_loc_kml_header()
 
         f.write(kml_header)
 
@@ -81,13 +81,13 @@ def write_cache_v2_signif_loc_to_kml(
             data_source = row["data_source"]
 
             # Print message to screen with each record number
-            c.print(
+            console.print(
                 f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
                 f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
             )
 
             # Write the data from each record to the .kml file
-            kml_body = cloud_v2_sqlite_signif_loc_kml_file_body(
+            kml_body = cloud_v2_signif_loc_kml_body(
                 record=record,
                 Z_PK=Z_PK,
                 address_info=address_info,

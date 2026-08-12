@@ -3,14 +3,14 @@
 from rich.console import Console
 import time
 
-from functions.functions import Utils
+from utils import Utils
 from vars.cache_encb_lte import(
-    cache_encb_db_lte_query,
-    cache_encb_db_lte_kml_file_header,
-    cache_encb_db_lte_kml_file_body
+    cache_encb_lte_query,
+    cache_encb_lte_kml_header,
+    cache_encb_lte_kml_body
 )
 
-c = Console()
+console = Console()
 
 def write_cache_encb_db_lte_to_kml(
         python_file: str,
@@ -32,7 +32,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     )
 
     # Generate the SQL query
-    CACHE_ENCRYPTEDB_WIFI_QUERY = cache_encb_db_lte_query(
+    CACHE_ENCRYPTEDB_WIFI_QUERY = cache_encb_lte_query(
         start_time=start_time,
         end_time=end_time,
     )
@@ -44,7 +44,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     number_of_rows = len(df)
 
     # Print verification message to screen
-    c.print(
+    console.print(
         f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
         f"of data\n"
     )
@@ -60,7 +60,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
     with open(kml_file, "w", encoding="utf-8") as f:
 
         # Write the header block of .kml file
-        kml_header = cache_encb_db_lte_kml_file_header()
+        kml_header = cache_encb_lte_kml_header()
 
         f.write(kml_header)
 
@@ -83,14 +83,14 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
             data_source = row["data_source"]
 
             # Print message to screen with each record number added
-            c.print(
+            console.print(
                 f"    [grey66]Processing Row # : [dodger_blue1]{record:04d}"
             )
 
             site_info = f"mcc: {mcc} | mnc: {mnc} | tac: {tac} | ci: {ci}"
 
             # Write the data from each record to the .kml file
-            kml_body = cache_encb_db_lte_kml_file_body(
+            kml_body = cache_encb_lte_kml_body(
                 record=record,
                 utc_time=utc_time,
                 latitude=latitude,

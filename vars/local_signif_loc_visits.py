@@ -1,46 +1,50 @@
 # !/usr/bin/env python3
 
-def local_sqlite_vehicle_loc_query(
+def local_signif_loc_visits_query(
         start_time: int,
-        end_time: int
-) -> str:
-    LOCAL_VEH_LOC_QUERY = f"""
+        end_time: int) -> str:
+    LOCAL_SIG_LOC_VISITS_QUERY = f"""
 SELECT
     ROW_NUMBER() OVER() AS 'record_number',
+
     Z_PK AS 'z_pk',
+    ZDATAPOINTCOUNT AS 'data_point_count',
+    ZLOCATIONOFINTEREST AS 'location_of_interest_id',
 
-    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZDATE + 978307200, 'UNIXEPOCH')) AS 'date_time_utc',
-    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZLOCDATE + 978307200, 'UNIXEPOCH')) AS 'location_date_utc',
+    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZCREATIONDATE + 978307200, 'UNIXEPOCH')) AS 'creation_date_utc',
+    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZENTRYDATE + 978307200, 'UNIXEPOCH')) AS 'entry_date_utc',
+    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZEXITDATE + 978307200, 'UNIXEPOCH')) AS 'exit_date_utc',
+    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZEXPIRATIONDATE + 978307200, 'UNIXEPOCH')) AS 'expiration_date_utc',
 
-    ZLOCLATITUDE AS 'latitude',
-    ZLOCLONGITUDE AS 'longitude',
-    RTRIM(LTRIM(CONCAT(ROUND(ZLOCLATITUDE, 6), ',', ROUND(ZLOCLONGITUDE, 6)))) AS 'gps_merged',
+    ZLOCATIONLATITUDE AS 'latitude',
+    ZLOCATIONLONGITUDE AS 'longitude',
+    RTRIM(LTRIM(CONCAT(ROUND(ZLOCATIONLATITUDE, 6), ',', ROUND(ZLOCATIONLONGITUDE, 6)))) AS 'gps_merged',
 
-    ZLOCUNCERTAINTY AS 'location_uncertainty',
-    ZIDENTIFIER AS 'identifier',
-    'Local.sqlite [ZRTVEHICLEEVENTHISTORYMO(Z_PK:' || Z_PK || ')]' AS 'data_source'
+    ZLOCATIONHORIZONTALUNCERTAINTY AS 'location_horizontal_uncertainty',
+    ZLOCATIONOFINTERESTCONFIDENCE AS 'location_confidence',
+    'Local.sqlite [ZRTLEARNEDLOCATIONOFINTERESTVISITMO(Z_PK:' || Z_PK || ')]' AS 'data_source'
 
 FROM
-    ZRTVEHICLEEVENTHISTORYMO
+    ZRTLEARNEDLOCATIONOFINTERESTVISITMO
 
 WHERE
-    ZDATE BETWEEN {start_time} AND {end_time}
+    ZCREATIONDATE BETWEEN {start_time} AND {end_time}
 
 ORDER BY
-    ZDATE ASC
+    Z_PK ASC
 """
-    return LOCAL_VEH_LOC_QUERY
+    return LOCAL_SIG_LOC_VISITS_QUERY
 
 
-def local_sqlite_vehicle_loc_kml_file_header() -> str:
-    LOCAL_VEH_LOC_KML_FILE_HEADER = f"""<?xml version="1.0" encoding="UTF-8"?>
+def local_signif_loc_visits_kml_header() -> str:
+    LOCAL_SIG_LOC_VISITS_KML_FILE_HEADER = f"""<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2"
   xmlns:gx="http://www.google.com/kml/ext/2.2"
   xmlns:kml="http://www.opengis.net/kml/2.2"
   xmlns:atom="http://www.w3.org/2005/Atom">
   <Document>
     <Folder>
-      <name>Vehicle Locations From Local.sqlite</name>
+      <name>Significant Location Visits Local.sqlite</name>
       <open>1</open>
       <description>View All Records</description>
       <Style id="recordfolder">
@@ -98,12 +102,12 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                   </thead>
                   <tbody>
                     <tr>
-                      <td class="heading">Date/Time (UTC)</td>
-                      <td class="data">$[utc_time]</td>
+                      <td class="heading">DataPointCount</td>
+                      <td class="data">$[data_point_count]</td>
                     </tr>
                     <tr>
-                      <td class="heading">Location Date/Time (UTC)</td>
-                      <td class="data">$[location_time_utc]</td>
+                      <td class="heading">LocationOfInterest ID</td>
+                      <td class="data">$[location_of_interest_id]</td>
                     </tr>
                     <tr>
                       <td class="heading">latitude</td>
@@ -118,15 +122,31 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                       <td class="data">$[loc_combined]</td>
                     </tr>
                     <tr>
-                      <td class="heading">Uncertainty</td>
-                      <td class="data">$[location_uncertainty]</td>
+                      <td class="heading">CreationDate(UTC)</td>
+                      <td class="data">$[creation_date_utc]</td>
                     </tr>
                     <tr>
-                      <td class="heading">Identifier</td>
-                      <td class="data">$[identifier]</td>
+                      <td class="heading">EntryDate(UTC)</td>
+                      <td class="data">$[entry_date_utc]</td>
                     </tr>
                     <tr>
-                      <td class="heading">Record Source</td>
+                      <td class="heading">ExitDate(UTC)</td>
+                      <td class="data">$[exit_date_utc]</td>
+                    </tr>
+                    <tr>
+                      <td class="heading">ExpirationDate(UTC)</td>
+                      <td class="data">$[expiration_date_utc]</td>
+                    </tr>
+                    <tr>
+                      <td class="heading">LocationHorizUncertainty</td>
+                      <td class="data">$[location_horiz_uncertainty]</td>
+                    </tr>
+                    <tr>
+                      <td class="heading">LocationConfidence</td>
+                      <td class="data">$[location_confidence]</td>
+                    </tr>
+                    <tr>
+                      <td class="heading">Record_Source</td>
                       <td class="data">
                         <b>Table:</b><br/>
                         $[data_source]
@@ -148,27 +168,30 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
         </ListStyle>
       </Style>
 """
-    return LOCAL_VEH_LOC_KML_FILE_HEADER
+    return LOCAL_SIG_LOC_VISITS_KML_FILE_HEADER
 
 
-def local_sqlite_vehicle_loc_kml_file_body(
+def local_signif_loc_visits_kml_body(
         record: str,
-        utc_time: str,
-        location_time_utc: str,
+        data_point_count: int,
+        location_of_interest_id: int,
+        creation_date_utc: str,
+        entry_date_utc: str,
+        exit_date_utc: str,
+        expiration_date_utc: str,
         latitude: int,
         longitude: int,
         loc_combined: str,
-        location_uncertainty: int,
-        identifier: str,
-        data_source: str
-) -> str:
-    LOCAL_VEH_LOC_KML_FILE_BODY = f"""
+        location_horiz_uncertainty: int,
+        location_confidence: int,
+        data_source: str) -> str:
+    LOCAL_SIG_LOC_VISITS_KML_FILE_BODY = f"""
       <Placemark>
         <name>{str(record).zfill(6)}</name>
         <visibility>1</visibility>
         <description>
           <![CDATA[
-            <p style="color:green">{utc_time[0:10]} at {utc_time[11:19]} UTC<br />
+            <p style="color:green">{creation_date_utc[0:10]} at {creation_date_utc[11:19]} UTC<br />
             [{latitude:.6f}, {longitude:.6f}]</p>
             ]]>
         </description>
@@ -181,18 +204,18 @@ def local_sqlite_vehicle_loc_kml_file_body(
           <range>0</range>
         </LookAt>
         <TimeStamp>
-          <when>{utc_time}</when>
+          <when>{creation_date_utc}</when>
         </TimeStamp>
         <styleUrl>#recordfolder</styleUrl>
         <ExtendedData>
           <Data name="rowid_text">
             <value>{str(record).zfill(6)}</value>
           </Data>
-          <Data name="utc_time">
-            <value>{utc_time}</value>
+          <Data name="data_point_count">
+            <value>{data_point_count}</value>
           </Data>
-          <Data name="location_time_utc">
-            <value>{location_time_utc}</value>
+          <Data name="location_of_interest_id">
+            <value>{location_of_interest_id}</value>
           </Data>
           <Data name="latitude">
             <value>{latitude:.6f}</value>
@@ -203,11 +226,23 @@ def local_sqlite_vehicle_loc_kml_file_body(
           <Data name="loc_combined">
             <value>{loc_combined}</value>
           </Data>
-          <Data name="location_uncertainty">
-            <value>{location_uncertainty:.6f}</value>
+          <Data name="creation_date_utc">
+            <value>{creation_date_utc}</value>
           </Data>
-          <Data name="identifier">
-            <value>{identifier}</value>
+          <Data name="entry_date_utc">
+            <value>{entry_date_utc}</value>
+          </Data>
+          <Data name="exit_date_utc">
+            <value>{exit_date_utc}</value>
+          </Data>
+          <Data name="expiration_date_utc">
+            <value>{expiration_date_utc}</value>
+          </Data>
+          <Data name="location_horiz_uncertainty">
+            <value>{location_horiz_uncertainty:.6f} meters</value>
+          </Data>
+          <Data name="location_confidence">
+            <value>{location_confidence:.6f}</value>
           </Data>
           <Data name="data_source">
             <value>{data_source}</value>
@@ -218,4 +253,4 @@ def local_sqlite_vehicle_loc_kml_file_body(
         </Point>
       </Placemark>
 """
-    return LOCAL_VEH_LOC_KML_FILE_BODY
+    return LOCAL_SIG_LOC_VISITS_KML_FILE_BODY

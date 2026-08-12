@@ -4,13 +4,14 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from vars.timezones import US_TIME_ZONES
-from functions.get_options import GetOptions
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-
 from rich.console import Console
 from rich.traceback import install
 from rich.panel import Panel
+
+from shared.timezones import US_TIME_ZONES
+from functions.get_options import GetOptions
+from utils import Utils
 
 
 __author__ = "@mikes"
@@ -19,8 +20,8 @@ __version__ = "1.2.1"
 
 
 # Create the console object
-c = Console()
-install(show_locals=True, console=c)
+console = Console()
+install(show_locals=True, console=console)
 
 
 def print_help() -> None:
@@ -68,53 +69,21 @@ Timezone Option:
         ["HT","HST"]       = "Pacific/Honolulu",
         ["UTC","GMT"]      = UTC timezone
 """
-    c.print(f"[yellow]{help_text}")
+    console.print(f"[yellow]{help_text}")
     # Exit cleanly
     sys.exit(0)
-
-
-def convert_input_time_to_apple_time(
-        date_string: str,
-        input_tz_name: str
-) -> float:
-    """Converts the time string to Apple Absolute Time based on the
-    user-defined timezone.
-
-    Args:
-        date_string: Formatted as 'YYYY-MM-DD HHMMSS'
-        input_tz_name: IANA timesone string (e.g., 'America/New_York', 'UTC')
-    """
-    try:
-        date_format = "%Y-%m-%d %H%M%S"
-        # Parse the date_string into a native datetime
-        native_dt = datetime.strptime(date_string, date_format)
-        # Interpret the input datetime as Eastern Time
-        input_dt = native_dt.replace(tzinfo=ZoneInfo(input_tz_name))
-        # Convert input datetime to UTC
-        utc_dt = input_dt.astimezone(timezone.utc)
-        # Define Apple Epoch
-        apple_epoch = datetime(2001, 1, 1, tzinfo=timezone.utc)
-        # Calculate the difference in seconds between the input datetime and
-        # the Apple Epoch time
-        absolute_time = (utc_dt - apple_epoch).total_seconds()
-
-        return absolute_time
-
-    except ZoneInfoNotFoundError:
-        return f"Error: '{input_tz_name}' is not a valid IANA timezone."
-    except ValueError as e:
-        return f"Error: Please check the date format. {e}"
 
 
 def get_options():
     """Get the required options to pass to the make_kml() function."""
 
     # Display a script header panel
-    c.print("")
-    c.print(
+    console.print("")
+    console.print(
         Panel.fit(
             "[bold cyan]Make .kml from database file[/bold cyan]\n"
-            "[dim]Please answer the following questions to configure the application.[/dim]",
+            "[dim]Please answer the following questions to configure the "
+            "application.[/dim]",
             border_style="cyan"
         )
     )
@@ -155,24 +124,23 @@ def make_kml(
 
     python_file = Path(__file__).name
 
-    tz_code = tz.upper()
-    iana_name = US_TIME_ZONES.get(tz_code)
+    iana_name = US_TIME_ZONES.get(tz.upper())
 
     # Convert the input time strings to Apple Absolute Time
     # Handle the string -> Apple time conversion just one time, rather than
     # have seperate functions in each .py file
-    start_time = convert_input_time_to_apple_time(start_time, iana_name)
-    end_time = convert_input_time_to_apple_time(end_time, iana_name)
+    start_time = Utils.convert_input_time_to_apple_time(start_time, iana_name)
+    end_time = Utils.convert_input_time_to_apple_time(end_time, iana_name)
 
 
     # Get local time when the script begins
     t = time.localtime()
 
     # Print the local time when the script began
-    c.print(
+    console.print(
         f"[grey66]=================================\n\n"
         "Program started : [dodger_blue1]"
-        f"{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET\n\n
+        f"{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET\n\n"
         "[grey66]================================="
     )
 
@@ -180,7 +148,9 @@ def make_kml(
     file_time = time.strftime("%Y-%m-%d_%H%M%S", t)
 
     if db == 1:
-        from cache_sqlite_to_kml import write_cache_sqlite_to_kml
+        from cache_sqlite_to_kml import (
+            write_cache_sqlite_to_kml
+        )
         write_cache_sqlite_to_kml(
             python_file=python_file,
             source=source,
@@ -193,7 +163,9 @@ def make_kml(
         )
 
     elif db == 2:
-        from cache_encb_db_wifi_to_kml import write_cache_encb_db_wifi_to_kml
+        from cache_encb_db_wifi_to_kml import (
+            write_cache_encb_db_wifi_to_kml
+        )
         write_cache_encb_db_wifi_to_kml(
             python_file=python_file,
             source=source,
@@ -206,7 +178,9 @@ def make_kml(
         )
 
     elif db == 3:
-        from cache_encb_db_lte_to_kml import write_cache_encb_db_lte_to_kml
+        from cache_encb_db_lte_to_kml import (
+            write_cache_encb_db_lte_to_kml
+        )
         write_cache_encb_db_lte_to_kml(
             python_file=python_file,
             source=source,
@@ -219,7 +193,9 @@ def make_kml(
         )
 
     elif db == 4:
-        from cloud_v2_sqlite_signif_loc_to_kml import write_cache_v2_signif_loc_to_kml
+        from cloud_v2_signif_loc_to_kml import (
+            write_cache_v2_signif_loc_to_kml
+        )
         write_cache_v2_signif_loc_to_kml(
             ppython_file=python_file,
             source=source,
@@ -232,7 +208,9 @@ def make_kml(
         )
 
     elif db == 5:
-        from local_sqlite_signif_loc_visits_to_kml import write_local_sqlite_signif_visits_to_kml
+        from local_signif_loc_visits_to_kml import (
+            write_local_sqlite_signif_visits_to_kml
+        )
         write_local_sqlite_signif_visits_to_kml(
             python_file=python_file,
             source=source,
@@ -245,7 +223,9 @@ def make_kml(
         )
 
     elif db == 6:
-        from local_sqlite_vehicle_loc_to_kml import write_local_sqlite_vehicle_loc_to_kml
+        from local_vehicle_loc_to_kml import (
+            write_local_sqlite_vehicle_loc_to_kml
+        )
         write_local_sqlite_vehicle_loc_to_kml(
             python_file=python_file,
             source=source,

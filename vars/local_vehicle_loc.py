@@ -1,58 +1,46 @@
 # !/usr/bin/env python3
 
-def cloud_v2_sqlite_signif_loc_query(
+def local_vehicle_loc_query(
         start_time: int,
-        end_time: int) -> str:
-    """Adds the `start_time` and `end_time` values to the SQL query that will
-    be run against the Cache.sqlite database file so that only records during
-    the desired time frame are returned.
-    """
-
-    CLOUDV2_SIG_LOC_QUERY = f"""
+        end_time: int
+) -> str:
+    LOCAL_VEH_LOC_QUERY = f"""
 SELECT
     ROW_NUMBER() OVER() AS 'record_number',
+    Z_PK AS 'z_pk',
 
-    ZRTADDRESSMO.Z_PK AS 'z_pk',
+    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZDATE + 978307200, 'UNIXEPOCH')) AS 'date_time_utc',
+    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZLOCDATE + 978307200, 'UNIXEPOCH')) AS 'location_date_utc',
 
-    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZRTADDRESSMO.ZCREATIONDATE + 978307200, 'UNIXEPOCH')) AS 'address_creation_date_utc',
-    strftime('%Y-%m-%dT%H:%M:%SZ', datetime(ZRTADDRESSMO.ZEXPIRATIONDATE + 978307200, 'UNIXEPOCH')) AS 'address_expire_date_utc',
+    ZLOCLATITUDE AS 'latitude',
+    ZLOCLONGITUDE AS 'longitude',
+    RTRIM(LTRIM(CONCAT(ROUND(ZLOCLATITUDE, 6), ',', ROUND(ZLOCLONGITUDE, 6)))) AS 'gps_merged',
 
-    ZRTADDRESSMO.ZSUBTHOROUGHFARE || ' ' ||
-    REPLACE(ZRTADDRESSMO.ZTHOROUGHFARE, '&', 'at') || ', ' ||
-    ZRTADDRESSMO.ZLOCALITY || ', ' ||
-    ZRTADDRESSMO.ZADMINISTRATIVEAREA || ' ' ||
-    ZRTADDRESSMO.ZPOSTALCODE || ' ' ||
-    ZRTADDRESSMO.ZCOUNTRYCODE AS 'address_info',
+    ZLOCUNCERTAINTY AS 'location_uncertainty',
+    ZIDENTIFIER AS 'identifier',
+    'Local.sqlite [ZRTVEHICLEEVENTHISTORYMO(Z_PK:' || Z_PK || ')]' AS 'data_source'
 
-    ZRTMAPITEMMO.ZLATITUDE AS 'latitude',
-    ZRTMAPITEMMO.ZLONGITUDE AS 'longitude',
-    RTRIM(LTRIM(CONCAT(ROUND(ZRTMAPITEMMO.ZLATITUDE, 6), ',', ROUND(ZRTMAPITEMMO.ZLONGITUDE, 6)))) AS 'gps_merged',
-
-    ZRTMAPITEMMO.ZNAME AS 'probable_place_name',
-    ZRTMAPITEMMO.ZUNCERTAINTY AS 'uncertainty',
-    'Cloud-V2.sqlite [ZRTADDRESSMO(Z_PK:' || ZRTADDRESSMO.Z_PK || ')]' AS 'data_source'
-
-FROM ZRTADDRESSMO
-    LEFT JOIN ZRTMAPITEMMO ON ZRTADDRESSMO.ZMAPITEM = ZRTMAPITEMMO.ZADDRESS
+FROM
+    ZRTVEHICLEEVENTHISTORYMO
 
 WHERE
-    ZRTADDRESSMO.ZCREATIONDATE BETWEEN {start_time} AND {end_time}
+    ZDATE BETWEEN {start_time} AND {end_time}
 
 ORDER BY
-    ZRTADDRESSMO.Z_PK ASC
+    ZDATE ASC
 """
-    return CLOUDV2_SIG_LOC_QUERY
+    return LOCAL_VEH_LOC_QUERY
 
 
-def cloud_v2_sqlite_signif_loc_kml_file_header() -> str:
-    CLOUDV2_SIG_LOC_KML_FILE_HEADER = f"""<?xml version="1.0" encoding="UTF-8"?>
+def local_vehicle_loc_kml_header() -> str:
+    LOCAL_VEH_LOC_KML_FILE_HEADER = f"""<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2"
   xmlns:gx="http://www.google.com/kml/ext/2.2"
   xmlns:kml="http://www.opengis.net/kml/2.2"
   xmlns:atom="http://www.w3.org/2005/Atom">
   <Document>
     <Folder>
-      <name>Locations From Cloud-V2.sqlite</name>
+      <name>Vehicle Locations From Local.sqlite</name>
       <open>1</open>
       <description>View All Records</description>
       <Style id="recordfolder">
@@ -110,12 +98,12 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                   </thead>
                   <tbody>
                     <tr>
-                      <td class="heading">Address</td>
-                      <td class="data">$[address_info]</td>
+                      <td class="heading">Date/Time (UTC)</td>
+                      <td class="data">$[utc_time]</td>
                     </tr>
                     <tr>
-                      <td class="heading">ProbablePlaceName</td>
-                      <td class="data">$[probable_place_name]</td>
+                      <td class="heading">Location Date/Time (UTC)</td>
+                      <td class="data">$[location_time_utc]</td>
                     </tr>
                     <tr>
                       <td class="heading">latitude</td>
@@ -131,19 +119,11 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                     </tr>
                     <tr>
                       <td class="heading">Uncertainty</td>
-                      <td class="data">$[uncertainty]</td>
+                      <td class="data">$[location_uncertainty]</td>
                     </tr>
                     <tr>
-                      <td class="heading">AddressCreationDate(UTC)</td>
-                      <td class="data">$[add_create_utc]</td>
-                    </tr>
-                    <tr>
-                      <td class="heading">ZRTADDRESSMO Record No.</td>
-                      <td class="data">$[Z_PK]</td>
-                    </tr>
-                    <tr>
-                      <td class="heading">AddressExpireDate(UTC)</td>
-                      <td class="data">$[add_expire_utc]</td>
+                      <td class="heading">Identifier</td>
+                      <td class="data">$[identifier]</td>
                     </tr>
                     <tr>
                       <td class="heading">Record Source</td>
@@ -168,30 +148,28 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
         </ListStyle>
       </Style>
 """
-    return CLOUDV2_SIG_LOC_KML_FILE_HEADER
+    return LOCAL_VEH_LOC_KML_FILE_HEADER
 
 
-def cloud_v2_sqlite_signif_loc_kml_file_body(
+def local_vehicle_loc_kml_body(
         record: str,
-        Z_PK: str,
-        address_info: str,
-        probable_place_name: str,
+        utc_time: str,
+        location_time_utc: str,
         latitude: int,
         longitude: int,
         loc_combined: str,
-        uncertainty: int,
-        add_create_utc: str,
-        add_expire_utc: str,
-        data_source: str) -> str:
-    CLOUDV2_SIG_LOC_KML_FILE_BODY = f"""
+        location_uncertainty: int,
+        identifier: str,
+        data_source: str
+) -> str:
+    LOCAL_VEH_LOC_KML_FILE_BODY = f"""
       <Placemark>
         <name>{str(record).zfill(6)}</name>
         <visibility>1</visibility>
         <description>
           <![CDATA[
-            <p style="color:green">{add_create_utc[0:10]} at {add_create_utc[11:19]} UTC<br />
-            {address_info}<br />
-            ({latitude:.6f},{longitude:.6f})</p>
+            <p style="color:green">{utc_time[0:10]} at {utc_time[11:19]} UTC<br />
+            [{latitude:.6f}, {longitude:.6f}]</p>
             ]]>
         </description>
         <LookAt>
@@ -203,21 +181,18 @@ def cloud_v2_sqlite_signif_loc_kml_file_body(
           <range>0</range>
         </LookAt>
         <TimeStamp>
-          <when>{add_create_utc}</when>
+          <when>{utc_time}</when>
         </TimeStamp>
         <styleUrl>#recordfolder</styleUrl>
         <ExtendedData>
           <Data name="rowid_text">
             <value>{str(record).zfill(6)}</value>
           </Data>
-          <Data name="z_pk">
-            <value>{Z_PK}</value>
+          <Data name="utc_time">
+            <value>{utc_time}</value>
           </Data>
-          <Data name="address_info">
-            <value>{address_info}</value>
-          </Data>
-          <Data name="probable_place_name">
-            <value>{probable_place_name}</value>
+          <Data name="location_time_utc">
+            <value>{location_time_utc}</value>
           </Data>
           <Data name="latitude">
             <value>{latitude:.6f}</value>
@@ -225,17 +200,14 @@ def cloud_v2_sqlite_signif_loc_kml_file_body(
           <Data name="longitude">
             <value>{longitude:.6f}</value>
           </Data>
-          <Data name="uncertainty">
-            <value>{uncertainty:.6f}</value>
-          </Data>
           <Data name="loc_combined">
             <value>{loc_combined}</value>
           </Data>
-          <Data name="add_create_utc">
-            <value>{add_create_utc}</value>
+          <Data name="location_uncertainty">
+            <value>{location_uncertainty:.6f}</value>
           </Data>
-          <Data name="add_expire_utc">
-            <value>{add_expire_utc}</value>
+          <Data name="identifier">
+            <value>{identifier}</value>
           </Data>
           <Data name="data_source">
             <value>{data_source}</value>
@@ -246,4 +218,4 @@ def cloud_v2_sqlite_signif_loc_kml_file_body(
         </Point>
       </Placemark>
 """
-    return CLOUDV2_SIG_LOC_KML_FILE_BODY
+    return LOCAL_VEH_LOC_KML_FILE_BODY

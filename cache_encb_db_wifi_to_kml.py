@@ -3,14 +3,14 @@
 from rich.console import Console
 import time
 
-from functions.functions import Utils
+from utils import Utils
 from vars.cache_encb_wifi import (
-    cache_encb_db_wifi_query,
-    cache_encb_db_wifi_kml_file_header,
-    cache_encb_db_wifi_kml_file_body
+    cache_encb_wifi_query,
+    cache_encb_wifi_kml_header,
+    cache_encb_wifi_kml_body
 )
 
-c = Console()
+console = Console()
 
 def write_cache_encb_db_wifi_to_kml(
         python_file: str,
@@ -31,7 +31,7 @@ def write_cache_encb_db_wifi_to_kml(
 {start_time} --endtime {end_time}"""
 
     # Generate the SQL query
-    CACHE_ENCRYPTEDB_WIFI_QUERY = cache_encb_db_wifi_query(
+    CACHE_ENCRYPTEDB_WIFI_QUERY = cache_encb_wifi_query(
         start_time=start_time,
         end_time=end_time,
     )
@@ -43,7 +43,7 @@ def write_cache_encb_db_wifi_to_kml(
     number_of_rows = len(df)
 
     # Print verification message to screen
-    c.print(
+    console.print(
         f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
         "of data\n"
     )
@@ -59,7 +59,7 @@ def write_cache_encb_db_wifi_to_kml(
     with open(kml_file, "w", encoding="utf-8") as f:
 
         # Write the header block of the .kml file
-        kml_header = cache_encb_db_wifi_kml_file_header()
+        kml_header = cache_encb_wifi_kml_header()
 
         f.write(kml_header)
 
@@ -82,12 +82,12 @@ def write_cache_encb_db_wifi_to_kml(
             # Print message to screen with each record number added.
             # DO NOT add Z_PK for this query -- the database table does not
             # have a primary key.
-            c.print(
+            console.print(
                 f"    [grey66]Processing Row #: [dodger_blue1]{record:04d}"
             )
 
             # Write data from each record to the .kml file
-            kml_body = cache_encb_db_wifi_kml_file_body(
+            kml_body = cache_encb_wifi_kml_body(
                 record=record,
                 latitude=latitude,
                 longitude=longitude,

@@ -2,106 +2,68 @@
 
 import argparse
 from argparse import RawDescriptionHelpFormatter
+from datetime import datetime
 import time
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
+from utils import Utils
 from pathlib import Path
 from rich.console import Console
 from rich.traceback import install
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from functions.get_options import GetOptions
-from vars.timezones import US_TIME_ZONES
+from shared.models import ConversionArgs
+from shared.timezones import US_TIME_ZONES
 
 
-__author__ = "@mikespon"
-__dlu__ = "10-Jun-2026"
-__version__ = "1.2.1"
+from versions import (
+    __version__,
+    __author__,
+    __last_updated__,
+    get_version_string
+)
 
 
 # Create the console object
-c = Console()
-install(show_locals=True, console=c)
+console = Console()
+install(show_locals=True, console=console)
 
 
-@dataclass(frozen=True)
-class ConversionArgs:
-    """Arguments shared across all conversion functions."""
-    python_file: str
-    source: str
-    dest: str
-    destf: str
-    make_csv: bool
-    start_time: str
-    end_time: str
-    file_time: str
+EXISTING_DATABASES = {
+    "Cache.sqlite",
+    "cache_encryptedB.db",
+    "Cloud-V2.sqlite",
+    "Local.sqlite",
+}
 
 
-def convert_input_time_to_apple_time(
-        date_string: str,
-        input_tz_name: str
-) -> float:
-    """Converts the time string to Apple Absolute Time based on the user-defined
-    timezone.
-
-    Args:
-        date_string: Formatted as 'YYYY-MM-DD HHMMSS'
-        input_tz_name: IANA timesone string (e.g., 'America/New_York', 'UTC')
-    """
-    try:
-        date_format = "%Y-%m-%d %H%M%S"
-        # Parse the date_string into a native datetime
-        native_dt = datetime.strptime(date_string, date_format)
-        # Interpret the input datetime as Eastern Time
-        input_dt = native_dt.replace(tzinfo=ZoneInfo(input_tz_name))
-        # Convert input datetime to UTC
-        utc_dt = input_dt.astimezone(timezone.utc)
-        # Define Apple Epoch
-        apple_epoch = datetime(2001, 1, 1, tzinfo=timezone.utc)
-        # Calculate the difference in seconds between the input datetime and
-        # the Apple Epoch time
-        absolute_time = (utc_dt - apple_epoch).total_seconds()
-
-        return absolute_time
-
-    except ZoneInfoNotFoundError:
-        return f"Error: '{input_tz_name}' is not a valid IANA timezone."
-    except ValueError as e:
-        return f"Error: Please check the date format -> {e}"
-
-
-
-def make_kml_cli() -> None:
-
+def parse_args() -> argparse.Namespace:
     # Set up the argument parser syntax for the command line
     parser = argparse.ArgumentParser(
         formatter_class=RawDescriptionHelpFormatter,
-        prog="make_kml.py",
+        prog="make_kml_cli.py",
         usage="'%(prog)s --help' for more information",
         description=f"""
 Description:
-    make_kml.py version {__version__}
+    make_kml_cli.py version {__version__}
 
 Author:
     {__author__}
 
 Last Updated:
-    {__dlu__}
+    {__last_updated__}
 
 Description
     Create a .kml file by reading the location records from the database \
-specified in the '--db' option.
+specified in the '--db_type' option.
 
-    The '--starttime' and '--endtime' values can be given as a string using \
+    The '--start_time' and '--end_time' values can be given as a string using \
 the following format: 'YYYY-MM-DD HHMMSS'.
 
 URL
     github.com/LongRangeBehaviorModificationSpecialist/ios_locations_to_kml
 
 Example
-    python .\\make_kml.py --source [SOURCE-FILE] --dest [DESTINATION-FOLDER] \
---destf [DESTINATION_FILENAME] --csv [y,n] --db [DATABASE_CHOICE] --starttime \
-[YYYY-MM-DD HHMMSS] --endtime [YYYY-MM-DD HHMMSS] --tz [TIMEZONE]
+    python .\\make_kml.py --source [SOURCE_FILE] --dest [DESTINATION_FOLDER] \
+[--make_csv | None] --db_type [DATABASE_CHOICE] --start_time \
+"[YYYY-MM-DD HHMMSS]" --end_time "[YYYY-MM-DD HHMMSS]" --tz_code "[TIMEZONE]"
 
 Notes
     Enclose the full path in double quotes if it contains spaces."""
@@ -111,40 +73,31 @@ Notes
         "--source",
         type=Path,
         required=True,
-        help="[str] Full path of database file."
+        help="[str] Full path of database file"
     )
 
     parser.add_argument(
         "--dest",
         type=Path,
         required=True,
-        help="[str] Directory to save resulting .kml (and .csv) file(s)."
+        help="[str] Output directory"
     )
 
     parser.add_argument(
-        "--destf",
-        type=str,
-        required=True,
-        help="[str] File name of the resulting .kml file. The current date and \
-time will be appended to the beginning of the file."
-    )
-
-    parser.add_argument(
-        "--csv",
-        type=str,
-        choices=["y","n"],
-        required=True,
+        "--make_csv",
+        required=False,
+        action="store_true",
         help="[str] Save a .csv file containing the query results?"
     )
 
     parser.add_argument(
-        "--db",
-        type=int,
-        choices=[1, 2, 3, 4, 5, 6],
+        "--db_type",
+        type=str,
         required=True,
+        choices=["1", "2", "3", "4", "5", "6"],
         help="""[int] Type of location data you want to examine. Enter the \
-corresponding number for the database/table containing the records you want to \
-examine:
+corresponding number for the database/table containing the records you want \
+to examine:
 1 = Cache.sqlite (Location History);
 2 = cache_encryptedB.db (WiFi locations);
 3 = cache_encryptedB.db (LTE locations);
@@ -154,119 +107,103 @@ examine:
     )
 
     parser.add_argument(
-        "--starttime",
+        "--start_time",
         type=str,
         required=True,
         help="[str] Timestamp of the first record to get ('YYYY-MM-DD HHMMSS')."
     )
 
     parser.add_argument(
-        "--endtime",
+        "--end_time",
         type=str,
         required=True,
         help="[str] Timestamp of the last record to get ('YYYY-MM-DD HHMMSS')."
     )
 
     parser.add_argument(
-        "--tz",
+        "--tz_code",
         type=str,
-        choices=["ET", "CT", "MT", "AZ", "PT", "AKT", "HT", "UTC"],
         required=True,
-        default="UTC",
+        choices=["ET", "CT", "MT", "AZ", "PT", "AKT", "HT", "UTC"],
         help="[str] Timezone used for the time values."
     )
 
-    args = parser.parse_args()
-    argv = vars(args)
-
-    source = argv["source"]
-    dest = argv["dest"]
-    destf = argv["destf"]
-    make_csv = argv["csv"]
-    db_type = argv["db"]
-    start_time = argv["starttime"]
-    end_time = argv["endtime"]
-    tz = argv["tz"]
+    return parser.parse_args()
 
 
-    python_file = str(Path(__file__).name)
-
-    tz_code = tz.upper()
-    iana_name = US_TIME_ZONES.get(tz_code)
-
-    # Convert the input time strings to Apple Absolute Time
-    # Handle the string -> Apple time conversion just one time, rather than
-    # have seperate functions in each .py file
-    start_time = convert_input_time_to_apple_time(start_time, iana_name)
-    end_time = convert_input_time_to_apple_time(end_time, iana_name)
-
-
-    # Get local time when the script begins
-    t = time.localtime()
-
-    # Print the local time when the script began
-    c.print(
-        "[grey66]=================================\n\n"
-        f"Program started : [dodger_blue1]"
-        f"{time.strftime("%d-%b-%Y at %H:%M:%S", t)} ET\n\n"
-        "[grey66]================================="
-    )
-
-    # Format the local time to append to the beginning of the output file name
-    file_time = time.strftime("%Y-%m-%d_%H%M%S", t)
-
-    existing_databases = {
-        entry.split(' ', 1)[0] for entry in GetOptions.db_option_list.values()
-    }
-    
-    # Create the dataclass from argparse.Namespace (clean mapping)
-    conversion_args = ConversionArgs(
-        python_file=python_file,
-        source=source,
-        dest=dest,
-        destf=destf,
-        make_csv=make_csv,
-        start_time=start_time,
-        end_time=end_time,
-        file_time=file_time,
-    )
-    
-
-    if source.name in existing_databases:
-        c.print(
-            f"\n[green]    Database file: {source.name} IS IN the approved "
-            "file list. Continuing..."
+def validate_source(source_path: Path) -> bool:
+    """Check if source is in database list."""
+    if source_path.name in EXISTING_DATABASES:
+        console.print(
+            f"[magenta][{Utils.get_current_time()}][green3] Database "
+            f"file: '{source_path.name}' is in the database file list. "
+            "Continuing..."
         )
-        match db_type:
-            case "1":
-                from cache_sqlite_to_kml import write_cache_sqlite_to_kml
-                write_cache_sqlite_to_kml(conversion_args)
-            case "2":
-                from cache_encb_db_wifi_to_kml import write_cache_encb_db_wifi_to_kml
-                write_cache_encb_db_wifi_to_kml(conversion_args)
-            case "3":
-                from cache_encb_db_lte_to_kml import write_cache_encb_db_lte_to_kml
-                write_cache_encb_db_lte_to_kml(conversion_args)
-            case "4":
-                from cloud_v2_sqlite_signif_loc_to_kml import write_cache_v2_signif_loc_to_kml
-                write_cache_v2_signif_loc_to_kml(conversion_args)
-            case "5":
-                from local_sqlite_signif_loc_visits_to_kml import write_local_sqlite_signif_visits_to_kml
-                write_local_sqlite_signif_visits_to_kml(conversion_args)
-            case "6":
-                from local_sqlite_vehicle_loc_to_kml import write_local_sqlite_vehicle_loc_to_kml
-                write_local_sqlite_vehicle_loc_to_kml(conversion_args)
-            case _:
-                c.print(
-                    "The code to examine the database you entered is not "
-                    "complete. Please try again later."
-                )
+        return True
     else:
-        c.print(
-            f"{source.name} IS NOT IN the approved list. Please choose a "
-            "different file..."
+        console.print(
+            f"[magenta][{Utils.get_current_time()}][yellow] Warning: "
+            f"'{source_path.name}' is NOT in the known database file list."
         )
+        return False
+
+
+def dispatch_converter(conversion_args: ConversionArgs, db_type: str) -> None:
+    """Route all conversions through unified writer."""
+    from writer import write_cache_to_kml
+    write_cache_to_kml(conversion_args)
+
+
+def main() -> None:
+
+    args = parse_args()
+
+    run_timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+
+    source_path = Path(args.source)
+    validate_source(source_path)
+
+    iana_name = US_TIME_ZONES.get(args.tz_code.upper())
+
+    start_time_apple = None
+    end_time_apple = None
+
+    if args.start_time:
+    # Convert the input time strings to Apple Absolute Time
+        start_time_apple = Utils.convert_input_time_to_apple_time(
+            args.start_time,
+            iana_name,
+        )
+        end_time_apple = Utils.convert_input_time_to_apple_time(
+            args.end_time,
+            iana_name,
+        )
+
+    run_time = time.strftime("%d-%b-%Y at %H:%M:%S", time.localtime())
+    # Print the local time when the script began
+    console.print(
+        f"[magenta][{Utils.get_current_time()}][grey66] Program started: "
+        f"[dodger_blue1]{run_time}"
+    )
+
+    # Create the dataclass from argparse.Namespace
+    conversion_args = ConversionArgs(
+        python_file = Path(__file__).name,
+        source=args.source,
+        dest=args.dest,
+        make_csv=args.make_csv,
+        db_type = args.db_type,
+        start_time=args.start_time,
+        end_time=args.end_time,
+        tz_code=args.tz_code,
+        start_time_apple=start_time_apple or 0.0,
+        end_time_apple=end_time_apple,
+        run_timestamp=run_timestamp,
+    )
+
+    # Route to converter
+    dispatch_converter(conversion_args, args.db_type)
 
 
 if __name__ == "__main__":
-    make_kml_cli()
+    main()

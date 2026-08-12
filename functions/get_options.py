@@ -44,10 +44,10 @@ class GetOptions:
 
         if source.name in existing_databases:
             console.print(
-                f"[green3]Database file: '{source.name}' IS IN the approved "
+                f"[green3]Database file: '{source.name}' is in the known "
                 "file list. Continuing..."
             )
-            return source
+            return Path(source)
         else:
             console.print(
                 f"[red1]Database file: '{source.name}' is not in the known "
@@ -110,7 +110,6 @@ class GetOptions:
 
         else:
             console.print(f"{responses[2]}")
-
             GetOptions.get_csv_option()
 
 
@@ -122,21 +121,21 @@ class GetOptions:
         )
         try:
             # Convert user input to an integer
-            db = int(db)
+            db_type = int(db_type)
             console.print(
-                f"Type of location data to be examined -> [magenta]{db}"
+                f"Type of location data to be examined -> [magenta]{db_type}"
             )
-            return db
+            return db_type
         except ValueError:
             # Handles where input cannot be converted to an integer
             console.print(
-                "[red]Error: Invalid input. Please enter a valid number"
+                "[red1]Error: Invalid input. Please enter a valid number"
             )
         except KeyError:
             # Handles where the number is an integer, but not in dictionary
             console.print(
-                f"[red1]Error: Number -> {db} does not match any "
-                f"options in the database"
+                f"[red1]Error: Number -> {db_type} does not match any "
+                f"available options"
             )
 
 
@@ -195,5 +194,5 @@ class GetOptions:
         tz = Prompt.ask(
             "Enter the timezone used for the date/time values"
         )
-        console.print(f"Entered timezone is: [italic][magenta]{tz}[/italic]")
+        console.print(f"Entered timezone is: [italic][magenta]{tz_code}[/italic]")
         return tz

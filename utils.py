@@ -11,7 +11,6 @@ import webbrowser
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 
-
 console = Console()
 
 
@@ -142,17 +141,9 @@ class Utils:
                 )
             else:
                 pass
-        except UnboundLocalError:
-            pass
+        except Exception as e:
+            print(f"{e}")
 
-        # # Show directory where the .kml file is saved
-        # console.print(
-        #     f"\n[grey66]The output file(s) are saved in the [i]"
-        #     f"[dodger_blue1]{Path(kml_file).parent}[/i] "
-        #     f"[grey66]directory"
-        # )
-
-        # Print the output to the screen
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Task "
             f"completed in [dodger_blue1]{total_time:.4f} [grey66]seconds"
@@ -209,8 +200,8 @@ class Utils:
 
         Args:
             date_string: Formatted as 'YYYY-MM-DD HHMMSS'
-            input_tz_name: IANA timesone string (e.g., 'America/New_York',
-                'UTC')
+            input_tz_name: IANA timesone string (e.g., 'America/New_York'
+                or 'UTC')
         """
         try:
             date_format = "%Y-%m-%d %H%M%S"
@@ -232,6 +223,6 @@ class Utils:
             return f"Error: '{input_tz_name}' is not a valid IANA timezone."
         except Exception as e:
             raise ValueError(
-                f"Failed to convert time {date_string}. Please check the "
+                f"Failed to convert time '{date_string}'. Please check the "
                 f"input format -> {e}"
             )

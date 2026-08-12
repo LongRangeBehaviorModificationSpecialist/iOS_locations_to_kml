@@ -73,21 +73,21 @@ Notes
         "--source",
         type=Path,
         required=True,
-        help="[str] Full path of database file"
+        help="Full path of database file"
     )
 
     parser.add_argument(
         "--dest",
         type=Path,
         required=True,
-        help="[str] Output directory"
+        help="Output directory"
     )
 
     parser.add_argument(
         "--make_csv",
         required=False,
         action="store_true",
-        help="[str] Save a .csv file containing the query results?"
+        help="Save a .csv file containing the query results?"
     )
 
     parser.add_argument(
@@ -95,29 +95,29 @@ Notes
         type=str,
         required=True,
         choices=["1", "2", "3", "4", "5", "6"],
-        help="""[int] Type of location data you want to examine. Enter the \
+        help="""Type of location data you want to examine. Enter the \
 corresponding number for the database/table containing the records you want \
 to examine:
-1 = Cache.sqlite (Location History);
-2 = cache_encryptedB.db (WiFi locations);
-3 = cache_encryptedB.db (LTE locations);
-4 = Cloud-V2.sqlite (Significant Locations);
-5 = Local.sqlite (Significant Location Visits); or
-6 = Local.sqlite (Vehicle Locations)."""
+1 = Cache.sqlite (Location History)
+2 = cache_encryptedB.db (WiFi locations)
+3 = cache_encryptedB.db (LTE locations)
+4 = Cloud-V2.sqlite (Significant Locations)
+5 = Local.sqlite (Significant Location Visits) or
+6 = Local.sqlite (Vehicle Locations)"""
     )
 
     parser.add_argument(
         "--start_time",
         type=str,
         required=True,
-        help="[str] Timestamp of the first record to get ('YYYY-MM-DD HHMMSS')."
+        help="Timestamp of the first record to get ('YYYY-MM-DD HHMMSS')"
     )
 
     parser.add_argument(
         "--end_time",
         type=str,
         required=True,
-        help="[str] Timestamp of the last record to get ('YYYY-MM-DD HHMMSS')."
+        help="Timestamp of the last record to get ('YYYY-MM-DD HHMMSS')"
     )
 
     parser.add_argument(
@@ -125,7 +125,7 @@ to examine:
         type=str,
         required=True,
         choices=["ET", "CT", "MT", "AZ", "PT", "AKT", "HT", "UTC"],
-        help="[str] Timezone used for the time values."
+        help="Timezone used for the time values"
     )
 
     return parser.parse_args()

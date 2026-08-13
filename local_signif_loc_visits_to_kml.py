@@ -44,7 +44,7 @@ def write_local_sqlite_signif_visits_to_kml(
 
     # Print verification message to screen.
     console.print(
-        f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
+        f"\n[grey66]Found [blue]{number_of_rows:,} [grey66]rows "
         f"of data\n"
     )
 
@@ -84,8 +84,8 @@ def write_local_sqlite_signif_visits_to_kml(
 
             # Print message to screen with each record number
             console.print(
-                f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
-                f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
+                f"    [grey66]Processing Row #: [blue]{record:04d} "
+                f"[grey66]| Z_PK #: [blue]{Z_PK}"
             )
 
             # Write the data from each record to the output .kml file.

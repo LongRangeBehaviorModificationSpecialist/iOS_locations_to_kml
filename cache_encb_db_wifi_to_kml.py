@@ -44,7 +44,7 @@ def write_cache_encb_db_wifi_to_kml(
 
     # Print verification message to screen
     console.print(
-        f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
+        f"\n[grey66]Found [blue]{number_of_rows:,} [grey66]rows "
         "of data\n"
     )
 
@@ -83,7 +83,7 @@ def write_cache_encb_db_wifi_to_kml(
             # DO NOT add Z_PK for this query -- the database table does not
             # have a primary key.
             console.print(
-                f"    [grey66]Processing Row #: [dodger_blue1]{record:04d}"
+                f"    [grey66]Processing Row #: [blue]{record:04d}"
             )
 
             # Write data from each record to the .kml file

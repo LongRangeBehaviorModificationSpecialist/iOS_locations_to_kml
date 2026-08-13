@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.traceback import install
 import time
 
-from make_kml_cli import ConversionArgs
+from make_kml import ConversionArgs
 from utils import Utils
 from vars.cache_sqlite import (
     cache_sqlite_query,
@@ -45,7 +45,7 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
 
     # Print verification message to screen
     console.print(
-        f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
+        f"\n[grey66]Found [blue]{number_of_rows:,} [grey66]rows "
         "of data\n"
     )
 
@@ -86,8 +86,8 @@ def write_cache_sqlite_to_kml(args: ConversionArgs) -> None:
 
             # Print message to screen with each record number
             console.print(
-                f"    [grey66]Processing Row #: [dodger_blue1]{record:04d} "
-                f"[grey66]| Z_PK #: [dodger_blue1]{Z_PK}"
+                f"    [grey66]Processing Row #: [blue]{record:04d} "
+                f"[grey66]| Z_PK #: [blue]{Z_PK}"
             )
 
             # Write the data from each record to the .kml file

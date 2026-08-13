@@ -4,6 +4,7 @@ from rich.console import Console
 from rich.prompt import Prompt
 from rich.traceback import install
 import time
+
 from handlers import get_handlers
 from shared.models import ConversionArgs
 from utils import Utils
@@ -11,6 +12,10 @@ from utils import Utils
 
 console = Console()
 install(show_locals=True, console=console)
+
+
+def timeout_handler():
+    print("\nTimeout reached. Continuing automatically...")
 
 
 def write_cache_to_kml(args: ConversionArgs) -> None:
@@ -51,29 +56,22 @@ def write_cache_to_kml(args: ConversionArgs) -> None:
 
     console.print(
         f"[magenta][{Utils.get_current_time()}][grey66] The initial query "
-        f"found [dodger_blue1]{number_of_rows:,} [grey66]rows of data"
+        f"found [blue]{number_of_rows:,} [grey66]rows of data"
     )
 
     # ===== USER CONFIRMATION PROMPT =====
-    try:
-        user_input = Prompt.ask(
-            f"[magenta][{Utils.get_current_time()}][yellow3] Do you want "
+    user_input = Prompt.ask(
+            f"[magenta][{Utils.get_current_time()}][yellow] Do you want "
             "to continue writing the KML file?",
             choices=["y", "n"],
             show_choices=True,
             default="y"
-        ).strip().lower()
-    except KeyboardInterrupt:
-        console.print(
-            f"[magenta][{Utils.get_current_time()}][red1] Operation "
-            "cancelled by user."
-        )
-        return
+    ).strip().lower()
 
     if user_input not in ("y"):
         console.print(
-            f"[magenta][{Utils.get_current_time()}][red1] Operation "
-            "cancelled by user. No files written."
+            f"[magenta][{Utils.get_current_time()}][red1] Operation cancelled "
+            "by user. No files written."
         )
         return
 
@@ -82,7 +80,7 @@ def write_cache_to_kml(args: ConversionArgs) -> None:
     kml_file.parent.mkdir(parents=True, exist_ok=True)
     console.print(
         f"[magenta][{Utils.get_current_time()}][grey66] Writing data to: "
-        f"[dodger_blue1]{kml_file.name}"
+        f"[blue]{kml_file.name}"
     )
 
     # Open output file
@@ -100,7 +98,7 @@ def write_cache_to_kml(args: ConversionArgs) -> None:
             # Print progress message
             console.print(
                 f"[magenta][{Utils.get_current_time()}][grey66] Processing "
-                f"Row #: [dodger_blue1]{row_data['record']:04d}"
+                f"Row #: [blue]{row_data['record']:04d}"
             )
 
             # Write KML body (handler-specific)

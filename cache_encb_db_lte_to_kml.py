@@ -45,7 +45,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
 
     # Print verification message to screen
     console.print(
-        f"\n[grey66]Found [dodger_blue1]{number_of_rows:,} [grey66]rows "
+        f"\n[grey66]Found [blue]{number_of_rows:,} [grey66]rows "
         f"of data\n"
     )
 
@@ -84,7 +84,7 @@ python .\{python_file} --source "{source}" --dest "{dest}" --destf "{destf}" \
 
             # Print message to screen with each record number added
             console.print(
-                f"    [grey66]Processing Row # : [dodger_blue1]{record:04d}"
+                f"    [grey66]Processing Row # : [blue]{record:04d}"
             )
 
             site_info = f"mcc: {mcc} | mnc: {mnc} | tac: {tac} | ci: {ci}"

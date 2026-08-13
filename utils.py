@@ -10,6 +10,8 @@ import sys
 import webbrowser
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from shared.models import ConversionArgs
+from vars.vars import US_TIME_ZONES
 
 console = Console()
 
@@ -111,20 +113,20 @@ class Utils:
         # Display the time frame between which the records were obtained
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Processed "
-            f"[dodger_blue1]{count:,} [grey66]records from the database..."
+            f"[blue]{count:,} [grey66]records from the database..."
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Query "
-            f"command:\n\n[i][dodger_blue1]{query_command_string}[/i]\n"
+            f"command:\n\n[i][blue]{query_command_string}[/i]\n"
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Beginning "
-            f"Date/Time Input: [i][dodger_blue1]"
+            f"Date/Time Input: [i][blue]"
             f"{Utils.convert_timestamp_to_local(start_time)}"
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] End Date/Time "
-            f"Input: [i][dodger_blue1]"
+            f"Input: [i][blue]"
             f"{Utils.convert_timestamp_to_local(end_time)}"
         )
 
@@ -132,12 +134,12 @@ class Utils:
             # console.print(f"\n[grey66]Output files:")
             console.print(
                 f"[magenta][{Utils.get_current_time()}][grey66] KML file: "
-                f"[dodger_blue1][i]{kml_file}"
+                f"[blue][i]{kml_file}"
             )
             if csv_file:
                 console.print(
                     f"[magenta][{Utils.get_current_time()}][grey66] CSV "
-                    f"file: [dodger_blue1][i]{csv_file}"
+                    f"file: [blue][i]{csv_file}"
                 )
             else:
                 pass
@@ -146,7 +148,7 @@ class Utils:
 
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Task "
-            f"completed in [dodger_blue1]{total_time:.4f} [grey66]seconds"
+            f"completed in [blue]{total_time:.4f} [grey66]seconds"
         )
 
         return None
@@ -165,7 +167,7 @@ class Utils:
 
         open_choice = (
             Prompt.ask(
-                f"[magenta][{Utils.get_current_time()}][yellow3] Do you want "
+                f"[magenta][{Utils.get_current_time()}][yellow] Do you want "
                 "to open the KML file now?",
                 choices=["y","n"],
                 show_choices=True,
@@ -226,3 +228,56 @@ class Utils:
                 f"Failed to convert time '{date_string}'. Please check the "
                 f"input format -> {e}"
             )
+
+
+    @staticmethod
+    def create_conversion_args(args, from_interactive: bool = False):
+        """Create ConversionArgs from either argparse or interactive input."""
+        run_timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+
+        if from_interactive:
+            values = args
+        else:
+            values = vars(args)
+
+        start_time_apple: float = 0.0
+        end_time_apple: float = 0.0
+
+        start_time_raw = values.get("start_time", "") or ""
+        end_time_raw = values.get("end_time", "")
+        iana_name = US_TIME_ZONES.get(
+            values.get("tz_code", "UTC").upper()
+        )
+
+        if start_time_raw:
+            # Convert the input time strings to Apple Absolute Time
+            start_time_apple = Utils.convert_input_time_to_apple_time(
+                start_time_raw,
+                iana_name,
+            )
+
+        if end_time_raw:
+            end_time_apple = Utils.convert_input_time_to_apple_time(
+                end_time_raw,
+                iana_name,
+            )
+
+        # Create dataclass (reuse same logic for both modes)
+        try:
+            conversion_args = ConversionArgs(
+                python_file=Path(__file__).name,
+                source=values["source"],
+                dest=values["dest"],
+                make_csv=values["make_csv"],
+                db_type=values["db_type"],
+                start_time=start_time_raw,
+                end_time=end_time_raw,
+                tz_code=values["tz_code"],
+                start_time_apple=start_time_apple,
+                end_time_apple=end_time_apple,
+                run_timestamp=run_timestamp,
+            )
+            return conversion_args
+        except (ValueError, KeyError) as e:
+            console.print(f"[red]A validation error has occured -> {e}")
+            exit(1)

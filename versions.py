@@ -4,8 +4,8 @@
 
 # Single source of version info
 __author__ = "@mikespon"
-__last_updated__ = "12-Aug-2026"
-__version__ = "0.3.2"
+__last_updated__ = "13-Aug-2026"
+__version__ = "0.3.3"
 __license__ = "MIT"
 __description__ = "KML creation from iOS location data utility"
 

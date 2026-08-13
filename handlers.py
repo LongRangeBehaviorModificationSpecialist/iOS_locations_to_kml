@@ -17,7 +17,9 @@ Usage:
 
 from typing import Callable, Dict, Any
 import pandas as pd
+from rich.console import Console
 from rich.traceback import install
+
 from vars.cache_sqlite import (
     cache_sqlite_query,
     cache_sqlite_kml_header,
@@ -49,7 +51,8 @@ from vars.local_vehicle_loc import (
     local_vehicle_loc_kml_body
 )
 
-install(show_locals=True)
+console=Console()
+install(show_locals=True, console=console)
 
 
 QUERY_BUILDERS: Dict[str, Callable[[float, float], str]] = {

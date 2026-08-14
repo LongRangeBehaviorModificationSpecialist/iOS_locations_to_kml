@@ -1,7 +1,7 @@
 # !/usr/bin/env python3
 
 from rich.console import Console
-from rich.prompt import Prompt
+from rich.prompt import Confirm
 from rich.traceback import install
 import time
 
@@ -60,15 +60,12 @@ def write_cache_to_kml(args: ConversionArgs) -> None:
     )
 
     # ===== USER CONFIRMATION PROMPT =====
-    user_input = Prompt.ask(
+    user_input = Confirm.ask(
             f"[magenta][{Utils.get_current_time()}][yellow] Do you want "
             "to continue writing the KML file?",
-            choices=["y", "n"],
-            show_choices=True,
-            default="y"
-    ).strip().lower()
+    )
 
-    if user_input not in ("y"):
+    if not user_input:
         console.print(
             f"[magenta][{Utils.get_current_time()}][red1] Operation cancelled "
             "by user. No files written."

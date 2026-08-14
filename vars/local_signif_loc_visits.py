@@ -20,8 +20,9 @@ SELECT
     ZLOCATIONLONGITUDE AS 'longitude',
     RTRIM(LTRIM(CONCAT(ROUND(ZLOCATIONLATITUDE, 6), ',', ROUND(ZLOCATIONLONGITUDE, 6)))) AS 'gps_merged',
 
-    ZLOCATIONHORIZONTALUNCERTAINTY AS 'location_horizontal_uncertainty',
+    ZLOCATIONHORIZONTALUNCERTAINTY AS 'location_horiz_uncertainty',
     ZLOCATIONOFINTERESTCONFIDENCE AS 'location_confidence',
+    hex(ZIDENTIFIER) AS 'identifier',
     'Local.sqlite [ZRTLEARNEDLOCATIONOFINTERESTVISITMO(Z_PK:' || Z_PK || ')]' AS 'data_source'
 
 FROM
@@ -106,35 +107,35 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                       <td class="data">$[data_point_count]</td>
                     </tr>
                     <tr>
-                      <td class="heading">LocationOfInterest ID</td>
+                      <td class="heading">LocationOfInterestID</td>
                       <td class="data">$[location_of_interest_id]</td>
                     </tr>
                     <tr>
-                      <td class="heading">latitude</td>
+                      <td class="heading">Latitude</td>
                       <td class="data">$[latitude]</td>
                     </tr>
                     <tr>
-                      <td class="heading">longitude</td>
+                      <td class="heading">Longitude</td>
                       <td class="data">$[longitude]</td>
                     </tr>
                     <tr>
                       <td class="heading">Combined GPS</td>
-                      <td class="data">$[loc_combined]</td>
+                      <td class="data">$[gps_merged]</td>
                     </tr>
                     <tr>
-                      <td class="heading">CreationDate(UTC)</td>
+                      <td class="heading">CreationDateUTC</td>
                       <td class="data">$[creation_date_utc]</td>
                     </tr>
                     <tr>
-                      <td class="heading">EntryDate(UTC)</td>
+                      <td class="heading">EntryDateUTC</td>
                       <td class="data">$[entry_date_utc]</td>
                     </tr>
                     <tr>
-                      <td class="heading">ExitDate(UTC)</td>
+                      <td class="heading">ExitDateUTC</td>
                       <td class="data">$[exit_date_utc]</td>
                     </tr>
                     <tr>
-                      <td class="heading">ExpirationDate(UTC)</td>
+                      <td class="heading">ExpirationDateUTC</td>
                       <td class="data">$[expiration_date_utc]</td>
                     </tr>
                     <tr>
@@ -144,6 +145,10 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                     <tr>
                       <td class="heading">LocationConfidence</td>
                       <td class="data">$[location_confidence]</td>
+                    </tr>
+                    <tr>
+                      <td class="heading">Identifier</td>
+                      <td class="data">$[identifier]</td>
                     </tr>
                     <tr>
                       <td class="heading">Record_Source</td>
@@ -181,9 +186,10 @@ def local_signif_loc_visits_kml_body(
         expiration_date_utc: str,
         latitude: int,
         longitude: int,
-        loc_combined: str,
+        gps_merged: str,
         location_horiz_uncertainty: int,
         location_confidence: int,
+        identifier: str,
         data_source: str) -> str:
     LOCAL_SIG_LOC_VISITS_KML_FILE_BODY = f"""
       <Placemark>
@@ -217,16 +223,16 @@ def local_signif_loc_visits_kml_body(
           <Data name="location_of_interest_id">
             <value>{location_of_interest_id}</value>
           </Data>
-          <Data name="latitude">
+          <Data name="Latitude">
             <value>{latitude:.6f}</value>
           </Data>
-          <Data name="longitude">
+          <Data name="Longitude">
             <value>{longitude:.6f}</value>
           </Data>
-          <Data name="loc_combined">
-            <value>{loc_combined}</value>
+          <Data name="gps_merged">
+            <value>{gps_merged}</value>
           </Data>
-          <Data name="creation_date_utc">
+          <Data name=creation_date_utc">
             <value>{creation_date_utc}</value>
           </Data>
           <Data name="entry_date_utc">
@@ -243,6 +249,9 @@ def local_signif_loc_visits_kml_body(
           </Data>
           <Data name="location_confidence">
             <value>{location_confidence:.6f}</value>
+          </Data>
+          <Data name="identifier">
+            <value>{identifier}</value>
           </Data>
           <Data name="data_source">
             <value>{data_source}</value>

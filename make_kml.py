@@ -2,26 +2,25 @@
 
 import argparse
 from argparse import RawDescriptionHelpFormatter
-from datetime import datetime
 import time
 from utils import Utils
 from pathlib import Path
-from rich_argparse import RichHelpFormatter
 from rich.console import Console
 from rich.traceback import install
 
 from functions.get_options import get_interactive_values
 from shared.models import ConversionArgs
-from vars.vars import US_TIME_ZONES, EXISTING_DATABASES
+from vars.vars import EXISTING_DATABASES
 
 
 from versions import (
     __version__,
     __author__,
     __last_updated__,
-    get_version_string
 )
 
+#TODO -- add option #7 for the 'ZRTLEARNEDLOCATIONOFINTERESTMO' table from Local.sqlite
+#TODO -- add option #8 for the 'ZRTLEARNEDLOCATIONOFINTERESTTRANSITIONMO' table from Local.sqlite
 
 # Create the console object
 console = Console()
@@ -38,7 +37,7 @@ def parse_args() -> argparse.Namespace:
         usage="'%(prog)s --help' for more information",
         description=(f"""
 Description:
-    make_kml.py version {__version__}
+    make_kml.py (version {__version__})
 
 Author:
     {__author__}
@@ -196,21 +195,13 @@ def main() -> None:
             from_interactive=True,
         )
     else:
-        # Check for required CLI args, if missing could hint at interactive mode
-        if not args.source:
-            console.print(
-                f"[magenta][{Utils.get_current_time()}][yellow] Warning: No "
-                f"source file specified.[/]\n"
-                "[cyan]Tip: Use --help or -i for interactive mode\n"
-            )
-
         # Validate required CLI args
         if not args.source or not args.end_time or not args.dest:
             console.print(
-                f"[magenta][{Utils.get_current_time()}][red] ERROR -> "
+                f"[magenta][{Utils.get_current_time()}][yellow] ERROR -> "
                 f"Missing required arguments.\n"
-                "[cyan]Run with --interactive (-i) to enter values "
-                "interactively or provide: source dest --end_time ..."
+                "[grey66]Run with '--interactive' ('-i') to enter values "
+                "interactively or use '--help' for more information"
             )
             exit(1)
 

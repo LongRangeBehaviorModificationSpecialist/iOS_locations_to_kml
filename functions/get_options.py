@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from rich.console import Console
 from rich.panel import Panel
-from rich.prompt import Prompt
+from rich.prompt import Prompt, Confirm
 from rich.traceback import install
 from typing import Dict
 
@@ -14,6 +14,10 @@ from utils import Utils
 
 console = Console()
 install(show_locals=True, console=console)
+
+
+#TODO -- add option #7 for the 'ZRTLEARNEDLOCATIONOFINTERESTMO' table from Local.sqlite
+#TODO -- add option #8 for the 'ZRTLEARNEDLOCATIONOFINTERESTTRANSITIONMO' table from Local.sqlite
 
 
 db_option_list = {
@@ -70,13 +74,10 @@ def get_dest() -> Path:
 def get_make_csv() -> str:
     """Get and return the option to create a .csv file with the results."""
     while True:
-        csv_option = Prompt.ask(
+        csv_option = Confirm.ask(
             f"\n[magenta][{Utils.get_current_time()}][grey66] Create a CSV "
             "file with the results of the query?",
-            choices=["y", "n"],
-            show_choices=True,
-            default="y",
-        ).strip().lower()
+        )
 
         if csv_option == "y":
             console.print(
@@ -204,7 +205,6 @@ def get_interactive_values() -> Dict[str, str | int]:
     console.print("")
     console.print(
         Panel.fit(
-            # "[bold][cyan]Make .kml from database file[/bold][grey66]\n"
             "\n[dim]Please answer the following questions to configure the "
             "application\n",
             border_style="cyan",

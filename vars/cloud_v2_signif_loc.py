@@ -28,7 +28,7 @@ SELECT
     ZRTMAPITEMMO.ZLONGITUDE AS 'longitude',
     RTRIM(LTRIM(CONCAT(ROUND(ZRTMAPITEMMO.ZLATITUDE, 6), ',', ROUND(ZRTMAPITEMMO.ZLONGITUDE, 6)))) AS 'gps_merged',
 
-    ZRTMAPITEMMO.ZNAME AS 'probable_place_name',
+    REPLACE(ZRTMAPITEMMO.ZNAME, '&', 'and') AS 'probable_place_name',
     ZRTMAPITEMMO.ZUNCERTAINTY AS 'uncertainty',
     'Cloud-V2.sqlite [ZRTADDRESSMO(Z_PK:' || ZRTADDRESSMO.Z_PK || ')]' AS 'data_source'
 
@@ -118,16 +118,16 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                       <td class="data">$[probable_place_name]</td>
                     </tr>
                     <tr>
-                      <td class="heading">latitude</td>
+                      <td class="heading">Latitude</td>
                       <td class="data">$[latitude]</td>
                     </tr>
                     <tr>
-                      <td class="heading">longitude</td>
+                      <td class="heading">Longitude</td>
                       <td class="data">$[longitude]</td>
                     </tr>
                     <tr>
                       <td class="heading">Combined GPS</td>
-                      <td class="data">$[loc_combined]</td>
+                      <td class="data">$[gps_merged]</td>
                     </tr>
                     <tr>
                       <td class="heading">Uncertainty</td>
@@ -136,10 +136,6 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                     <tr>
                       <td class="heading">AddressCreationDate(UTC)</td>
                       <td class="data">$[add_create_utc]</td>
-                    </tr>
-                    <tr>
-                      <td class="heading">ZRTADDRESSMO Record No.</td>
-                      <td class="data">$[Z_PK]</td>
                     </tr>
                     <tr>
                       <td class="heading">AddressExpireDate(UTC)</td>
@@ -178,7 +174,7 @@ def cloud_v2_signif_loc_kml_body(
         probable_place_name: str,
         latitude: int,
         longitude: int,
-        loc_combined: str,
+        gps_merged: str,
         uncertainty: int,
         add_create_utc: str,
         add_expire_utc: str,
@@ -228,8 +224,8 @@ def cloud_v2_signif_loc_kml_body(
           <Data name="uncertainty">
             <value>{uncertainty:.6f}</value>
           </Data>
-          <Data name="loc_combined">
-            <value>{loc_combined}</value>
+          <Data name="gps_merged">
+            <value>{gps_merged}</value>
           </Data>
           <Data name="add_create_utc">
             <value>{add_create_utc}</value>

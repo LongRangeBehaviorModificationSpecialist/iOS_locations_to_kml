@@ -98,24 +98,24 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                   </thead>
                   <tbody>
                     <tr>
-                      <td class="heading">Date/Time (UTC)</td>
+                      <td class="heading">DateTimeUTC</td>
                       <td class="data">$[utc_time]</td>
                     </tr>
                     <tr>
-                      <td class="heading">Location Date/Time (UTC)</td>
+                      <td class="heading">LocationDateTimeUTC</td>
                       <td class="data">$[location_time_utc]</td>
                     </tr>
                     <tr>
-                      <td class="heading">latitude</td>
+                      <td class="heading">Latitude</td>
                       <td class="data">$[latitude]</td>
                     </tr>
                     <tr>
-                      <td class="heading">longitude</td>
+                      <td class="heading">Longitude</td>
                       <td class="data">$[longitude]</td>
                     </tr>
                     <tr>
-                      <td class="heading">Combined GPS</td>
-                      <td class="data">$[loc_combined]</td>
+                      <td class="heading">CombinedGPS</td>
+                      <td class="data">$[gps_merged]</td>
                     </tr>
                     <tr>
                       <td class="heading">Uncertainty</td>
@@ -126,7 +126,7 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                       <td class="data">$[identifier]</td>
                     </tr>
                     <tr>
-                      <td class="heading">Record Source</td>
+                      <td class="heading">RecordSource</td>
                       <td class="data">
                         <b>Table:</b><br/>
                         $[data_source]
@@ -157,7 +157,7 @@ def local_vehicle_loc_kml_body(
         location_time_utc: str,
         latitude: int,
         longitude: int,
-        loc_combined: str,
+        gps_merged: str,
         location_uncertainty: int,
         identifier: str,
         data_source: str
@@ -200,8 +200,8 @@ def local_vehicle_loc_kml_body(
           <Data name="longitude">
             <value>{longitude:.6f}</value>
           </Data>
-          <Data name="loc_combined">
-            <value>{loc_combined}</value>
+          <Data name="gps_merged">
+            <value>{gps_merged}</value>
           </Data>
           <Data name="location_uncertainty">
             <value>{location_uncertainty:.6f}</value>

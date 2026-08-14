@@ -152,7 +152,7 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                     </tr>
                     <tr>
                       <td class="heading">Combined GPS</td>
-                      <td class="data">$[loc_combined]</td>
+                      <td class="data">$[gps_merged]</td>
                     </tr>
                     <tr>
                       <td class="heading">Speed</td>
@@ -200,7 +200,7 @@ def cache_sqlite_kml_body(
         record: str,
         latitude: int,
         longitude: int,
-        loc_combined: str,
+        gps_merged: str,
         course: str,
         horiz_acc_meters: str,
         utc_time: str,
@@ -250,8 +250,8 @@ def cache_sqlite_kml_body(
           <Data name="longitude">
             <value>{longitude:.6f}</value>
           </Data>
-          <Data name="loc_combined">
-            <value>{loc_combined}</value>
+          <Data name="gps_merged">
+            <value>{gps_merged}</value>
           </Data>
           <Data name="speed">
             <value>{speed_meters_per_sec} mps ({speed_mph} mph)</value>

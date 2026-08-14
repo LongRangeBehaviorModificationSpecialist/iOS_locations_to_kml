@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 from rich.console import Console
-from rich.prompt import Prompt
+from rich.prompt import Confirm
 import pandas as pd
 from pathlib import Path
 import sqlite3
@@ -96,7 +96,6 @@ class Utils:
 
     @staticmethod
     def end_program(
-        # number_of_rows: int,
         start_time: int,
         end_time: int,
         csv_file: str,
@@ -121,17 +120,16 @@ class Utils:
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Beginning "
-            f"Date/Time Input: [i][blue]"
+            f"Date/Time Input (Local): [i][blue]"
             f"{Utils.convert_timestamp_to_local(start_time)}"
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] End Date/Time "
-            f"Input: [i][blue]"
+            f"Input (Local): [i][blue]"
             f"{Utils.convert_timestamp_to_local(end_time)}"
         )
 
         try:
-            # console.print(f"\n[grey66]Output files:")
             console.print(
                 f"[magenta][{Utils.get_current_time()}][grey66] KML file: "
                 f"[blue][i]{kml_file}"
@@ -166,12 +164,9 @@ class Utils:
         """
 
         open_choice = (
-            Prompt.ask(
+            Confirm.ask(
                 f"[magenta][{Utils.get_current_time()}][yellow] Do you want "
                 "to open the KML file now?",
-                choices=["y","n"],
-                show_choices=True,
-                default="y",
             )
         )
 
@@ -188,7 +183,6 @@ class Utils:
                     f"[magenta][{Utils.get_current_time()}][grey66] "
                     "Exiting now..."
                 )
-                # Exit the program
                 sys.exit(0)
 
 
@@ -265,7 +259,7 @@ class Utils:
         # Create dataclass (reuse same logic for both modes)
         try:
             conversion_args = ConversionArgs(
-                python_file=Path(__file__).name,
+                python_file="make_kml.py",
                 source=values["source"],
                 dest=values["dest"],
                 make_csv=values["make_csv"],

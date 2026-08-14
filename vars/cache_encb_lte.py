@@ -10,9 +10,9 @@ SELECT
 
     strftime('%Y-%m-%dT%H:%M:%SZ', datetime(Timestamp + 978307200, 'UNIXEPOCH')) AS 'timestamp_utc',
 
-    latitude AS 'latitude',
+    Latitude AS 'latitude',
     Longitude AS 'longitude',
-    RTRIM(LTRIM(CONCAT(ROUND(latitude, 6), ',', ROUND(Longitude, 6)))) AS 'gps_merged',
+    RTRIM(LTRIM(CONCAT(ROUND(Latitude, 6), ',', ROUND(Longitude, 6)))) AS 'gps_merged',
 
     MCC AS 'mcc',
     MNC AS 'mnc',
@@ -114,7 +114,7 @@ font-size:1.15em; font-weight:bold; padding:5px 8px; width:40%;}}
                     </tr>
                     <tr>
                       <td class="heading">Combined GPS</td>
-                      <td class="data">$[loc_combined]</td>
+                      <td class="data">$[gps_merged]</td>
                     </tr>
                     <tr>
                       <td class="heading">Site Info</td>
@@ -162,7 +162,7 @@ def cache_encb_lte_kml_body(
         record: str,
         latitude: int,
         longitude: int,
-        loc_combined: str,
+        gps_merged: str,
         horiz_accuracy: str,
         utc_time: str,
         site_info: str,
@@ -175,10 +175,8 @@ def cache_encb_lte_kml_body(
         <name>{str(record).zfill(6)}</name>
         <visibility>1</visibility>
         <description>
-          <![CDATA[
-            <p style="color:green">{utc_time[0:10]} at {utc_time[11:19]} UTC<br />
-            [{latitude:.6f}, {longitude:.6f}]</p>
-            ]]>
+          <![CDATA[<p style="color:green">{utc_time[0:10]} at {utc_time[11:19]} UTC<br />
+            [{latitude:.6f}, {longitude:.6f}]</p>]]>
         </description>
         <LookAt>
           <longitude>{longitude}</longitude>
@@ -205,8 +203,8 @@ def cache_encb_lte_kml_body(
           <Data name="longitude">
             <value>{longitude:.6f}</value>
           </Data>
-          <Data name="loc_combined">
-            <value>{loc_combined}</value>
+          <Data name="gps_merged">
+            <value>{gps_merged}</value>
           </Data>
           <Data name="site_info">
             <value>{site_info}</value>

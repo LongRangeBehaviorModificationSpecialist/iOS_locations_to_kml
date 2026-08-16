@@ -59,8 +59,10 @@ Description:
     2 = cache_encryptedB.db (WiFi locations),
     3 = cache_encryptedB.db (LTE locations),
     4 = Cloud-V2.sqlite (Significant Locations),
-    5 = Local.sqlite (Significant Location Visits), or
-    6 = Local.sqlite (Vehicle Locations)
+    5 = Local.sqlite (Significant Location Visits),
+    6 = Local.sqlite (Vehicle Locations),
+    7 = Local.sqlite (Locations of Interest) [*PENDING*], or
+    8 = Local.sqlite (Locations of Interest Transitions) [*PENDING*]
 
     Valid options for the '--tz_code' parameter are:
 
@@ -77,12 +79,12 @@ URL:
     github.com/LongRangeBehaviorModificationSpecialist/ios_locations_to_kml
 
 Example:
-    python .\\make_kml.py [-i | --interactive | None] --source <str> --dest \
+    python .\make_kml.py [-i | --interactive | None] --source <str> --dest \
 <str> [--make_csv | None] --db_type <str> --start_time <"YYYY-MM-DD HHMMSS"> \
 --end_time <"YYYY-MM-DD HHMMSS"> --tz_code <str>
 
 Notes:
-    Enclose the path in double quotes (for the '--source' and '--dest' values)
+    Enclose file paths in double quotes (for the '--source' and '--dest' values)
     if it contains spaces."""
         )
     )
@@ -121,7 +123,7 @@ Notes:
         type=str,
         required=False,
         choices=["1", "2", "3", "4", "5", "6"],
-        help=("Number associated with the database/table you want to query")
+        help="Number associated with the database/table you want to query"
     )
 
 
@@ -167,7 +169,10 @@ def validate_source(source_path: Path) -> bool:
         return False
 
 
-def dispatch_converter(conversion_args: ConversionArgs, db_type: str) -> None:
+def dispatch_converter(
+        conversion_args: ConversionArgs,
+        db_type: str
+) -> None:
     """Route all conversions through unified writer."""
     from writer import write_cache_to_kml
     write_cache_to_kml(conversion_args)

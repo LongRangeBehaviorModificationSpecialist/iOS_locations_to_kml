@@ -5,6 +5,7 @@ EXISTING_DATABASES = {
     "Local.sqlite",
 }
 
+
 DATABASE_IDS = {
     "1": "Cache.sqlite (Location History)",
     "2": "cache_encryptedB.db (WiFi locations)",

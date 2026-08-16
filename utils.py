@@ -1,4 +1,4 @@
-# !/usr/bin/env python3
+l# !/usr/bin/env python3
 
 from datetime import datetime, timezone
 from rich.console import Console
@@ -145,10 +145,10 @@ class Utils:
             else:
                 pass
         except Exception as e:
-            console.print(
+            raise RuntimeError(
                 f"[magenta][{Utils.get_current_time()}][red] An "
                 f"uncaught error occured -> {e}"
-            )
+            ) from e
 
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Task "
@@ -222,24 +222,21 @@ class Utils:
             return absolute_time
 
         except ZoneInfoNotFoundError:
-            console.print(
+            raise(
                 f"[magenta][{Utils.get_current_time()}][red] Error: "
                 f"'{input_tz_name}' is not a valid IANA timezone."
             )
-            return None
         except ValueError:
-            console.print(
+            raise(
                 f"[magenta][{Utils.get_current_time()}][red] Failed "
                 f"to convert time '{date_string}'. Please check the "
                 f"input format -> {e}"
             )
-            return None
         except Exception as e:
-            console.print(
+            raise RuntimeError(
                 f"[magenta][{Utils.get_current_time()}][red] An uncaught "
                 f"error occured -> {e}}
-            )
-            return None
+            ) from e
 
 
     @staticmethod
@@ -260,9 +257,9 @@ class Utils:
         iana_name = US_TIME_ZONES.get(
             values.get("tz_code", "UTC").upper()
         )
-
+        
+        # Convert the input time strings to Apple Absolute Time
         if start_time_raw:
-            # Convert the input time strings to Apple Absolute Time
             start_time_apple = Utils.convert_input_time_to_apple_time(
                 start_time_raw,
                 iana_name,
@@ -291,5 +288,5 @@ class Utils:
             )
             return conversion_args
         except (ValueError, KeyError) as e:
-            console.print(f"[red]A validation error has occured -> {e}")
+            raise(f"[red]A validation error has occured -> {e}") from e
             exit(1)

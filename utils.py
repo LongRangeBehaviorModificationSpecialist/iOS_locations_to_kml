@@ -145,7 +145,10 @@ class Utils:
             else:
                 pass
         except Exception as e:
-            print(f"{e}")
+            console.print(
+                f"[magenta][{Utils.get_current_time()}][red] An "
+                f"uncaught error occured -> {e}"
+            )
 
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Task "
@@ -173,20 +176,19 @@ class Utils:
             )
         )
 
-        match open_choice:
-            case "y":
-                console.print(
-                    f"[magenta][{Utils.get_current_time()}][grey66] Opening "
-                    "the KML file..."
-                )
-                webbrowser.open(kml_file)
-                return None
-            case "n":
-                console.print(
-                    f"[magenta][{Utils.get_current_time()}][grey66] "
-                    "Exiting now..."
-                )
-                sys.exit(0)
+        if open_choice:
+            console.print(
+                f"[magenta][{Utils.get_current_time()}][grey66] Opening "
+                "the KML file..."
+            )
+            webbrowser.open(kml_file)
+            return None
+        else:
+            console.print(
+                f"[magenta][{Utils.get_current_time()}][grey66] "
+                "Exiting now..."
+            )
+            sys.exit(0)
 
 
     @staticmethod
@@ -203,6 +205,7 @@ class Utils:
                 or 'UTC')
         """
         try:
+            # Set the date format
             date_format = "%Y-%m-%d %H%M%S"
             # Parse the date_string into a native datetime
             native_dt = datetime.strptime(date_string, date_format)
@@ -219,12 +222,24 @@ class Utils:
             return absolute_time
 
         except ZoneInfoNotFoundError:
-            return f"Error: '{input_tz_name}' is not a valid IANA timezone."
-        except Exception as e:
-            raise ValueError(
-                f"Failed to convert time '{date_string}'. Please check the "
+            console.print(
+                f"[magenta][{Utils.get_current_time()}][red] Error: "
+                f"'{input_tz_name}' is not a valid IANA timezone."
+            )
+            return None
+        except ValueError:
+            console.print(
+                f"[magenta][{Utils.get_current_time()}][red] Failed "
+                f"to convert time '{date_string}'. Please check the "
                 f"input format -> {e}"
             )
+            return None
+        except Exception as e:
+            console.print(
+                f"[magenta][{Utils.get_current_time()}][red] An uncaught "
+                f"error occured -> {e}}
+            )
+            return None
 
 
     @staticmethod

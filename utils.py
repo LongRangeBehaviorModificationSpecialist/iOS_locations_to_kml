@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 from rich.console import Console
 from rich.prompt import Confirm
+from rich.traceback import install
 import pandas as pd
 from pathlib import Path
 import sqlite3
@@ -13,7 +14,9 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from shared.models import ConversionArgs
 from vars.vars import US_TIME_ZONES
 
+
 console = Console()
+install(show_locals=True, console=console)
 
 
 class Utils:

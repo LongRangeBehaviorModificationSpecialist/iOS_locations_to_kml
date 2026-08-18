@@ -77,21 +77,21 @@ class ConversionArgs:
                 raise ValueError(
                     f"start_time value ({self.start_time}) must be before "
                     f"end_time value ({self.end_time}). Got {self.start_time} "
-                    f" ->  {self.end_time}"
+                    f" →  {self.end_time}"
                 )
 
         # --- Source File Validation ---
         if not Path(self.source).exists():
-            raise FileNotFoundError(f"Source file not found: {self.source}")
+            raise FileNotFoundError(f"Source file not found → {self.source}")
 
         # --- Destination Directory Validation ---
         try:
             Path(self.dest).mkdir(parents=True, exist_ok=True)
         except PermissionError:
-            raise PermissionError(f"Cannot write to destination: {self.dest}")
+            raise PermissionError(f"Cannot write to destination → {self.dest}")
         except OSError as e:
             raise OSError(
-                f"Invalid destination directory: '{self.dest}' -> {e}"
+                f"Invalid destination directory: '{self.dest}' → {e}"
             )
 
         # --- db_type Validation ---

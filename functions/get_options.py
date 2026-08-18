@@ -38,20 +38,20 @@ def get_source() -> Path:
         ).strip("\"'")
         source = Path(source).resolve()
         console.print(
-            f"[magenta][{Utils.get_current_time()}][blue] Path to database "
-            f"file was entered as -> [magenta][i]{source}"
+            f"[magenta][{Utils.get_current_time()}][bright_blue] Path to database "
+            f"file was entered as → [magenta][i]{source}"
         )
 
         if source.name in EXISTING_DATABASES:
             console.print(
-                f"\n[magenta][{Utils.get_current_time()}][green] Database "
+                f"\n[magenta][{Utils.get_current_time()}][bright_green] Database "
                 f"file [magenta][i]{source.name}[/i][/] is in the known file "
                 "list. Continuing..."
             )
             return Path(source)
         else:
             console.print(
-                f"\n[magenta][{Utils.get_current_time()}][red] Database "
+                f"\n[magenta][{Utils.get_current_time()}][bright_red] Database "
                 f"file [magenta][i]{source.name}[/i][/] is not in the known "
                 "file list. Please choose a different file..."
             )
@@ -65,7 +65,7 @@ def get_dest() -> Path:
     ).strip("\"'")
 
     console.print(
-        f"[magenta][{Utils.get_current_time()}][blue] Results will be saved "
+        f"[magenta][{Utils.get_current_time()}][bright_blue] Results will be saved "
         f"in the [magenta][i]{dest}[/i][/] directory"
     )
     return Path(dest)
@@ -81,20 +81,20 @@ def get_make_csv() -> str:
 
         if csv_option == "y":
             console.print(
-                f"[magenta][{Utils.get_current_time()}][blue] A CSV file "
+                f"[magenta][{Utils.get_current_time()}][bright_blue] A CSV file "
                 f"[magenta][i]WILL[/i][/] be created with the KML file"
             )
             return True
         elif csv_option == "n":
             console.print(
-                f"[magenta][{Utils.get_current_time()}][blue] A CSV file "
+                f"[magenta][{Utils.get_current_time()}][bright_blue] A CSV file "
                 f"[magenta][i]WILL NOT[/i][/] be created"
             )
             return False
         else:
             console.print(
-                f"[magenta][{Utils.get_current_time()}][yellow] A valid option "
-                "was not entered. Try again."
+                f"[magenta][{Utils.get_current_time()}][bright_yellow] A valid "
+                "option was not entered. Try again."
             )
 
 
@@ -111,21 +111,21 @@ def get_db_type() -> int:
 
             if db_type in DATABASE_IDS:
                 console.print(
-                    f"[magenta][{Utils.get_current_time()}][blue] ✓ Type of "
-                    f"location data to be examined -> [magenta][i]"
+                    f"[magenta][{Utils.get_current_time()}][bright_blue] Type of "
+                    f"location data to be examined → [magenta][i]"
                     f"{DATABASE_IDS[db_type]}"
                 )
             return db_type
         except ValueError:
             # Handles where input cannot be converted to an integer
             console.print(
-                f"[magenta][{Utils.get_current_time()}][yellow] ✗ Error -> "
+                f"[magenta][{Utils.get_current_time()}][bright_yellow] Error -> "
                 "Invalid input. Please enter a valid number"
             )
         except KeyError:
             # Handles where the number is an integer, but not in dictionary
             console.print(
-                f"[magenta][{Utils.get_current_time()}][yellow] ✗ Error -> "
+                f"[magenta][{Utils.get_current_time()}][bright_yellow] Error → "
                 f"Number [magenta][i]{db_type}[/i][/] does not match any "
                 f"available options"
             )
@@ -144,13 +144,13 @@ def get_start_time() -> str:
         # Convert the input string to datetime object
         datetime.strptime(start_time, "%Y-%m-%d %H%M%S")
         console.print(
-            f"[magenta][{Utils.get_current_time()}][blue] Date/Time of "
-            f"[i]first[/i] record to be returned -> [magenta][i]"
+            f"[magenta][{Utils.get_current_time()}][bright_blue] Date/Time of "
+            f"[i]first[/i] record to be returned → [magenta][i]"
             f"{start_time}"
         )
         return start_time
-    except ValueError as e:
-        console.print(f"[red1]An error occured -> {e}")
+    except ValueError as err:
+        console.print(f"[red1]An error occured → {err}")
         get_start_time()
 
 
@@ -166,8 +166,8 @@ def get_end_time() -> str:
         )
         if datetime.strptime(end_time, "%Y-%m-%d %H%M%S"):
             console.print(
-                f"[magenta][{Utils.get_current_time()}][blue] Date/Time of "
-                f"[i]last[/i] record to be returned -> [magenta]"
+                f"[magenta][{Utils.get_current_time()}][bright_blue] Date/Time of "
+                f"[i]last[/i] record to be returned → [magenta]"
                 f"[i]{end_time}"
             )
             return end_time
@@ -175,7 +175,7 @@ def get_end_time() -> str:
             raise ValueError
     except ValueError as e:
         console.print(
-            f"[magenta][{Utils.get_current_time()}][yellow] An error occured "
+            f"[magenta][{Utils.get_current_time()}][bright_yellow] An error occured "
             f"-> {e}"
         )
         get_end_time()
@@ -190,8 +190,8 @@ def get_tz_code() -> str:
         "used for the date/time values"
     )
     console.print(
-        f"[magenta][{Utils.get_current_time()}][blue] Recorded timezone "
-        f"value is -> [magenta][i]{tz_code}"
+        f"[magenta][{Utils.get_current_time()}][bright_blue] Recorded timezone "
+        f"value is → [magenta][i]{tz_code}"
     )
     return tz_code
 

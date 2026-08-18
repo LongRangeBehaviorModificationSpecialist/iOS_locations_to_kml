@@ -156,14 +156,14 @@ def validate_source(source_path: Path) -> bool:
     """Check if source is in database list."""
     if source_path.name in EXISTING_DATABASES:
         console.print(
-            f"[magenta][{Utils.get_current_time()}][green3] Database "
-            f"file: '{source_path.name}' is in the database file list. "
+            f"[magenta][{Utils.get_current_time()}][bright_green] Database "
+            f"file → '{source_path.name}' is in the database file list. "
             "Continuing..."
         )
         return True
     else:
         console.print(
-            f"[magenta][{Utils.get_current_time()}][yellow] Warning: "
+            f"[magenta][{Utils.get_current_time()}][bright_yellow] Warning → "
             f"'{source_path.name}' is NOT in the known database file list."
         )
         return False
@@ -191,7 +191,7 @@ def main() -> None:
 
     if args.interactive:
         console.print(
-            f"[magenta][{Utils.get_current_time()}][yellow] Starting "
+            f"[magenta][{Utils.get_current_time()}][bright_yellow] Starting "
             "INTERACTIVE mode..."
         )
         interactive_values = get_interactive_values()
@@ -203,7 +203,7 @@ def main() -> None:
         # Validate required CLI args
         if not args.source or not args.end_time or not args.dest:
             console.print(
-                f"[magenta][{Utils.get_current_time()}][yellow] ERROR -> "
+                f"[magenta][{Utils.get_current_time()}][bright_yellow] ERROR → "
                 f"Missing required arguments.\n"
                 "[grey66]Run with '--interactive' ('-i') to enter values "
                 "interactively or use '--help' for more information"

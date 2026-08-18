@@ -1,4 +1,4 @@
-l# !/usr/bin/env python3
+# !/usr/bin/env python3
 
 from datetime import datetime, timezone
 from rich.console import Console
@@ -115,40 +115,40 @@ class Utils:
         # Display the time frame between which the records were obtained
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Processed "
-            f"[blue]{count:,} [grey66]records from the database..."
+            f"[bright_blue]{count:,} [grey66]records from the database..."
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Query "
-            f"command:\n\n[i][blue]{query_command_string}[/i]\n"
+            f"command:\n\n[i][bright_blue]{query_command_string}[/i]\n"
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Beginning "
-            f"Date/Time Input (Local): [i][blue]"
+            f"Date/Time Input (Local): [i][bright_blue]"
             f"{Utils.convert_timestamp_to_local(start_time)}"
         )
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] End Date/Time "
-            f"Input (Local): [i][blue]"
+            f"Input (Local): [i][bright_blue]"
             f"{Utils.convert_timestamp_to_local(end_time)}"
         )
 
         try:
             console.print(
                 f"[magenta][{Utils.get_current_time()}][grey66] KML file: "
-                f"[blue][i]{kml_file}"
+                f"[bright_blue][i]{kml_file}"
             )
             if csv_file:
                 console.print(
                     f"[magenta][{Utils.get_current_time()}][grey66] CSV "
-                    f"file: [blue][i]{csv_file}"
+                    f"file: [bright_blue][i]{csv_file}"
                 )
             else:
                 pass
-        except Exception as e:
+        except Exception as err:
             raise RuntimeError(
-                f"[magenta][{Utils.get_current_time()}][red] An "
-                f"uncaught error occured -> {e}"
-            ) from e
+                f"[magenta][{Utils.get_current_time()}][bright_red] An "
+                f"uncaught error occured -> {err}"
+            ) from err
 
         console.print(
             f"[magenta][{Utils.get_current_time()}][grey66] Task "
@@ -171,7 +171,7 @@ class Utils:
 
         open_choice = (
             Confirm.ask(
-                f"[magenta][{Utils.get_current_time()}][yellow] Do you want "
+                f"[magenta][{Utils.get_current_time()}][bright_yellow] Do you want "
                 "to open the KML file now?",
             )
         )
@@ -223,20 +223,20 @@ class Utils:
 
         except ZoneInfoNotFoundError:
             raise(
-                f"[magenta][{Utils.get_current_time()}][red] Error: "
+                f"[magenta][{Utils.get_current_time()}][bright_red] Error: "
                 f"'{input_tz_name}' is not a valid IANA timezone."
             )
-        except ValueError:
+        except ValueError as e:
             raise(
-                f"[magenta][{Utils.get_current_time()}][red] Failed "
+                f"[magenta][{Utils.get_current_time()}][bright_red] Failed "
                 f"to convert time '{date_string}'. Please check the "
                 f"input format -> {e}"
             )
-        except Exception as e:
+        except Exception as err:
             raise RuntimeError(
-                f"[magenta][{Utils.get_current_time()}][red] An uncaught "
-                f"error occured -> {e}}
-            ) from e
+                f"[magenta][{Utils.get_current_time()}][bright_red] An uncaught "
+                f"error occured -> {err}}
+            ) from err
 
 
     @staticmethod
@@ -287,6 +287,6 @@ class Utils:
                 run_timestamp=run_timestamp,
             )
             return conversion_args
-        except (ValueError, KeyError) as e:
-            raise(f"[red]A validation error has occured -> {e}") from e
+        except (ValueError, KeyError) as err:
+            raise(f"[bright_red]A validation error has occured -> {err}") from err
             exit(1)
